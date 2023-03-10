@@ -25,7 +25,7 @@ class ActionElastic(Action):
         es_client = Elasticsearch("https://localhost:9200", http_auth=("elastic", "jCJ2SMeF5mDqXMPlvs92"),  verify_certs=False)
         index_name = "intentify"
 
-        response = search(tracker.latest_message["text"], es_client, "hamzab/codebert_code_search", index_name)
+        response = search(tracker.latest_message["text"], es_client, "hamzab/codebert_code_search", index_name, 2500)
 
         answer = response
 
@@ -41,7 +41,7 @@ def search(query: str, es_client: Elasticsearch, model: str, index: str, top_k: 
         "knn":{
         "field": "embeddings",
         "query_vector": query_vector[0].tolist(),
-        "k": 10,
+        "k": 3,
         "num_candidates": top_k
         },
         "fields":["repo","func_name",
@@ -53,41 +53,51 @@ def search(query: str, es_client: Elasticsearch, model: str, index: str, top_k: 
     }
     res = es_client.search(index=index, body=query_dict)
 
-    for hit in res["hits"]["hits"]:
-        print(f"Document ID: {hit['_id']}")
-        print(f"Document Score: {hit['_score']}")
-        print(f"Document Title: {hit['_source']['repo']}")
-        print(f"Document Language: {hit['_source']['language']}")
-        print(f"Document Text: {hit['_source']['code']}")
-        print(f"Document Embedding: {hit['_source']['embeddings']}")
+    # for hit in res["hits"]["hits"]:
+    #     print(f"Document ID: {hit['_id']}")
+    #     print(f"Document Score: {hit['_score']}")
+    #     print(f"Document Title: {hit['_source']['repo']}")
+    #     print(f"Document Language: {hit['_source']['language']}")
+    #     print(f"Document Text: {hit['_source']['code']}")
+    #     print(f"Document Embedding: {hit['_source']['embeddings']}")
 
-        print("=====================================================================\n")
+    #     print("=====================================================================\n")
     
-    def get_best_document(res):
-        best_score = float('-inf')
-        best_doc = None
+    # def get_best_document(res):
+    #     best_score = float('-inf')
+    #     best_doc = None
 
-        for hit in res["hits"]["hits"]:
-            if '_score' not in hit:
-                continue  # skip this hit if it doesn't have a _score key
-            score = hit['_score']
-            if score > best_score:
-                best_score = score
-                best_doc = hit
+    #     for hit in res["hits"]["hits"]:
+    #         if '_score' not in hit:
+    #             continue  # skip this hit if it doesn't have a _score key
+    #         score = hit['_score']
+    #         if score > best_score:
+    #             best_score = score
+    #             best_doc = hit
 
-        return best_doc
+    #     return best_doc
 
 
 
-    print(res)
-    best_doc = get_best_document(res)
-    print(best_doc)
+    # print(res)
+    # best_doc = get_best_document(res)
+    # print(best_doc)
 
-    code = best_doc['_source']['code']
-    repo = best_doc['_source']['repo']
-    score = best_doc['_score']
-        
-    return "I found the following code snippet for you: <pre class='language-python'><code class='language-python hljs'> " + str(code) + "</code></pre> It is used in this repository: " + str(repo) + "<br/> And this is the score I assigned it: " + str(score)
+    # code = best_doc['_source']['code']
+    # repo = best_doc['_source']['repo']
+    # score = best_doc['_score']
+    
+    resultstring = "I found the following 3 code snippets for you: <br/>"
+
+    for index, hit in enumerate(res["hits"]["hits"]):
+
+        code = hit['_source']['code']
+        repo = hit['_source']['repo']
+        score = hit['_score']
+        resultstring += str(index +1)
+        resultstring += ": <br/><p> <pre class='language-python'><code class='language-python hljs'> " + str(code) + "</code></pre> It is used in this repository: " + str(repo) + "<br/> And this is the score I assigned it: " + str(score) + "</p><br/>"
+    
+    return resultstring
 class Encoder:
     def __init__(self, model_name: str):
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)

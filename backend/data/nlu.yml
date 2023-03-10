@@ -2,14 +2,14 @@ version: "3.1"
 nlu:
 - intent: knowledge_question
   examples: |
-    - Can you look this up: what is ?
+    - Can you look this up: what is?
     - Look this up: what is?
     - Can you check: what is?
-    - please check: What is ?
-    - Can you look this up: where is ?
+    - please check: What is?
+    - Can you look this up: where is?
     - Look this up: where is?
     - Can you check: where is?
-    - please check: where is ?
+    - please check: where is?
     - I want to know how Fibonacci works
     - What is an array?
     - What is fibonacci?
@@ -59,14 +59,14 @@ nlu:
     - Yes
 - intent: give_feedback
   examples: |
-    - [no] (feedback_boolean)
-    - [n] (feedback_boolean)
+    - [no](feedback_boolean)
+    - [n](feedback_boolean)
     - never
     - I don't think so
     - don't like that
     - no way
     - not really
-    - [perfect] (feedback_boolean)
+    - [perfect](feedback_boolean)
     - great
     - amazing
     - wonderful
@@ -74,11 +74,13 @@ nlu:
     - so so perfect
     - so good
     - so perfect
-    - [not good] (feedback_boolean)
+    - [not good](feedback_boolean)
     - not very good
     - extremly sad
     - [No](feedback_boolean)
-    - [Use array plainly](feedback_text)
+    - [I prefer it if you do it like](feedback_text)
+    - [Next time use this instead of that](feedback_text)
+    - [It gives strange code](feedback_text)
     - [No](feedback_boolean)
     - I expect an array to be shorter
 - intent: bot_challenge
@@ -87,6 +89,4 @@ nlu:
     - are you a human?
     - am I talking to a bot?
     - am I talking to a human?
-- intent: nlu_fallback
-  examples: |
-    - true
+

@@ -16,7 +16,8 @@ intents:
     use_entities: true
 - deny:
     use_entities: true
-- give_feedback
+- give_feedback:
+    use_entities: true
 - goodbye:
     use_entities: true
 - greet:
