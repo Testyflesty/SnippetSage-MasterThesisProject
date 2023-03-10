@@ -52,8 +52,8 @@ To install the project, follow these steps:
 `cd backend`
 
 3. Run the Rasa action server and the rasa socketIO API:  
-    rasa run actions --cors "*" --debug
-    rasa run -m models --enable-api --cors "*" --debug
+`rasa run actions --cors "*" --debug`  
+`rasa run -m models --enable-api --cors "*" --debug`
   
 4. Use any frontend or serve the index.html file from the frontend folder
 
