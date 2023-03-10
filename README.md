@@ -45,13 +45,13 @@ For more dependencies check the requirements.txt file in the backend folder. Thi
 TODO update the elasticsearch backend commands
 To install the project, follow these steps:
 
-1. Clone the repository:
+1. Clone the repository:  
 `git clone https://github.com/Testyflesty/SnippetSage-MasterThesisProject/`
 
-2. CD into the backend directory
+2. CD into the backend directory:  
 `cd backend`
 
-3. Run the Rasa action server and the rasa socketIO API
+3. Run the Rasa action server and the rasa socketIO API:  
     rasa run actions --cors "*" --debug
     rasa run -m models --enable-api --cors "*" --debug
   
