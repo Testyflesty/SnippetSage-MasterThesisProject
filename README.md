@@ -63,14 +63,14 @@ To install the project, follow these steps:
 
 ## Examples
 
-![alt text](https://github.com/[username]/MasterThesisProject/blob/[branch]/image.jpg?raw=true)
+![OLDIntentify](screenshots/OLDIntentify.png?raw=true "Old Intentify Prototype")
 
-![Chitchat](https://github.com/Testyflesty/[reponame]/blob/[branch]/image.jpg?raw=true "SnippetSage ChitChat")
-![Question1](https://github.com/Testyflesty/SnippetSage-MasterThesisProject/master/screenshots/Question1.png?raw=true "SnippetSage Asking a code question")
-![Question2](https://github.com/Testyflesty/SnippetSage-MasterThesisProject/master/screenshots/Question2.png?raw=true "SnippetSage Asking a code question")
-![Question3](https://github.com/Testyflesty/SnippetSage-MasterThesisProject/master/screenshots/Question3.png?raw=true "SnippetSage Asking a code question")
-![Feedback1](https://github.com/Testyflesty/SnippetSage-MasterThesisProject/master/screenshots/Feedback1.png?raw=true "SnippetSage Giving feedback")
-![Feedback2](https://github.com/Testyflesty/SnippetSage-MasterThesisProject/master/screenshots/Feedback2.png?raw=true "SnippetSage Giving feedback")
+![Chitchat](screenshots/Chitchat.png?raw=true "SnippetSage ChitChat")
+![Question1](screenshots/Question1.png?raw=true "SnippetSage Asking a code question")
+![Question2](screenshots/Question2.png?raw=true "SnippetSage Asking a code question")
+![Question3](screenshots/Question3.png?raw=true "SnippetSage Asking a code question")
+![Feedback1](screenshots/Feedback1.png?raw=true "SnippetSage Giving feedback")
+![Feedback2](screenshots/Feedback2.png?raw=true "SnippetSage Giving feedback")
 
 
 ## Contributing
