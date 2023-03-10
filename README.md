@@ -1,6 +1,6 @@
 # SnippetSage - A Neural Code Search Engine with Intent Modelling Chat Bot
 
-> Dorothy followed her through many of the beautiful rooms in her castle.
+> "Intent modeling enables us to bridge the gap between what users search for and what they really want." - Anne Aula, Director of User Research at Google
 
 This project is a part of my Master's thesis research at Utrecht University, and it involves the development of a neural code search engine that uses intent modelling to improve the accuracy of code search results. Additionally, the project includes a chat bot that uses the same intent modelling technique to help users find relevant code snippets or ask questions about coding concepts. It currently uses CodeBert to create the vector embeddings for the code snippets, which could be replaced by CODEX or other future algorithms. The study is part of the SearchSeco research group at Utrecht University, and therefore the system is compatable with custom and/or private software ecosystems.
 
