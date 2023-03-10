@@ -1,6 +1,13 @@
 # SnippetSage - A Neural Code Search Engine with Intent Modelling Chat Bot
 
-This project is a part of my Master's thesis research at Utrecht University, and it involves the development of a neural code search engine that uses intent modelling to improve the accuracy of code search results. Additionally, the project includes a chat bot that uses the same intent modelling technique to help users find relevant code snippets or ask questions about coding concepts. It currently uses CodeBert to create the vector embeddings for the code snippets, which could be replaced by CODEX or future algorithms.
+> Dorothy followed her through many of the beautiful rooms in her castle.
+
+This project is a part of my Master's thesis research at Utrecht University, and it involves the development of a neural code search engine that uses intent modelling to improve the accuracy of code search results. Additionally, the project includes a chat bot that uses the same intent modelling technique to help users find relevant code snippets or ask questions about coding concepts. It currently uses CodeBert to create the vector embeddings for the code snippets, which could be replaced by CODEX or other future algorithms. The study is part of the SearchSeco research group at Utrecht University, and therefore the system is compatable with custom and/or private software ecosystems.
+
+
+Read the associated paper here: 
+
+
 
 ## Table of Contents
 
@@ -30,7 +37,7 @@ The project requires the following main dependencies:
 - ElasticSearch 7.17.8
 - Rasa 3.4.1
 
-For more dependencies check the requirements.txt file in the backend folder. This can be installed using
+For more dependencies check the requirements.txt file in the backend folder. This can be installed using <br/>
 `pip install requirements.txt`
 
 
