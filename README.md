@@ -17,6 +17,7 @@ Read the associated paper here:
 |📦 [Project Dependencies](#project-dependencies) | List of required dependencies            
 |🚀 [Installation](#installation)         | Instructions for installing the project 
 |🕹️ [Usage](#usage)                | Instructions for using the project      
+|🕹️ [Examples](#examples)                | Example screenshots of using the bot      
 |🤝 [Contributing](#contributing)         | Guidelines for contributing to the project 
 |📜 [License](#license)              | Information about the project's license  
 
@@ -59,6 +60,19 @@ To install the project, follow these steps:
 
 
 ## Usage
+
+## Examples
+
+![alt text](https://github.com/[username]/MasterThesisProject/blob/[branch]/image.jpg?raw=true)
+
+![Chitchat](https://github.com/Testyflesty/[reponame]/blob/[branch]/image.jpg?raw=true "SnippetSage ChitChat")
+![Question1](https://github.com/Testyflesty/SnippetSage-MasterThesisProject/master/screenshots/Question1.png?raw=true "SnippetSage Asking a code question")
+![Question2](https://github.com/Testyflesty/SnippetSage-MasterThesisProject/master/screenshots/Question2.png?raw=true "SnippetSage Asking a code question")
+![Question3](https://github.com/Testyflesty/SnippetSage-MasterThesisProject/master/screenshots/Question3.png?raw=true "SnippetSage Asking a code question")
+![Feedback1](https://github.com/Testyflesty/SnippetSage-MasterThesisProject/master/screenshots/Feedback1.png?raw=true "SnippetSage Giving feedback")
+![Feedback2](https://github.com/Testyflesty/SnippetSage-MasterThesisProject/master/screenshots/Feedback2.png?raw=true "SnippetSage Giving feedback")
+
+
 ## Contributing
 
 Contributions to the project are welcome. To contribute, follow these steps:
