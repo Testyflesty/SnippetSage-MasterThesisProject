@@ -1,4 +1,4 @@
-version: "2.0"
+version: "3.1"
 
 stories:
 
@@ -28,3 +28,35 @@ stories:
   - action: utter_did_that_help
   - intent: deny
   - action: utter_goodbye
+
+
+
+- story: interactive_story_1
+  steps:
+  - intent: knowledge_question
+  - action: call_haystack
+  - action: user_feedback_form
+  - active_loop: user_feedback_form
+  - slot_was_set:
+    - requested_slot: feedback_boolean
+  - slot_was_set:
+    - feedback_boolean: No
+  - slot_was_set:
+    - requested_slot: feedback_text
+  - intent: give_feedback
+    entities:
+    - feedback_text: Use array plainly
+
+- story: interactive_story_1
+  steps:
+  - intent: knowledge_question
+  - action: call_haystack
+  - action: user_feedback_form
+  - active_loop: user_feedback_form
+  - slot_was_set:
+    - requested_slot: feedback_boolean
+  - slot_was_set:
+    - feedback_boolean: No
+  - slot_was_set:
+    - requested_slot: feedback_text
+  - intent: give_feedback

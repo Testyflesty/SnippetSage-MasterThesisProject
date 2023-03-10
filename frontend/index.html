@@ -13,8 +13,9 @@
     <link rel="stylesheet" href="./static/demo_bot/chatbot-ui.css">
     <link rel="stylesheet" href="./static/prism.css" />
     <link rel="stylesheet" href="./static/styles.css">
-
-    <title>SnippetSage</title>
+    <link rel="stylesheet" href="./styles/atom-one-dark.min.css">
+    <script src="./highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
 </head>
 
 <body class="w-full h-full">
@@ -46,6 +47,27 @@
             <div class="mt-10 flex items-center gap-x-6">
               <p class="text-sm font-semibold leading-6 text-white">Click on the button at the bottom right of the screen! <span aria-hidden="true">→</span></p>
             </div>
+            <pre>
+              <code class="language-python">
+                def discretize(self, data):
+                """Discretizes the data.
+                Args:
+                    data: numpy 2d or 1d array
+                Returns:
+                    numpy array of same dimension, discretized.
+                """
+                ret = data.copy()
+                for feature in self.lambdas:
+                    if len(data.shape) == 1:
+                        ret[feature] = int(self.lambdas[feature](ret[feature]))
+                    else:
+                        ret[:, feature] = self.lambdas[feature](
+                            ret[:, feature]).astype(int)
+                return ret
+        
+        
+              </code>
+            </pre>
           </div>
 
         </div>

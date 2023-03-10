@@ -62,10 +62,32 @@ def search(query: str, es_client: Elasticsearch, model: str, index: str, top_k: 
         print(f"Document Embedding: {hit['_source']['embeddings']}")
 
         print("=====================================================================\n")
+    
+    def get_best_document(res):
+        best_score = float('-inf')
+        best_doc = None
+
+        for hit in res["hits"]["hits"]:
+            if '_score' not in hit:
+                continue  # skip this hit if it doesn't have a _score key
+            score = hit['_score']
+            if score > best_score:
+                best_score = score
+                best_doc = hit
+
+        return best_doc
+
+
+
+    print(res)
+    best_doc = get_best_document(res)
+    print(best_doc)
+
+    code = best_doc['_source']['code']
+    repo = best_doc['_source']['repo']
+    score = best_doc['_score']
         
-        code = f"Document Text: {hit['_source']['code']}"
-    return code
-        
+    return "I found the following code snippet for you: <pre class='language-python'><code class='language-python hljs'> " + str(code) + "</code></pre> It is used in this repository: " + str(repo) + "<br/> And this is the score I assigned it: " + str(score)
 class Encoder:
     def __init__(self, model_name: str):
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)

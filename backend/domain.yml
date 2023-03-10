@@ -1,30 +1,51 @@
-version: '2.0'
+version: '3.1'
 config:
   store_entities_as_slots: true
 session_config:
   session_expiration_time: 60
   carry_over_slots_to_new_session: true
+entities:
+- feedback_boolean
+- feedback_text
 intents:
-- knowledge_question:
+- affirm:
+    use_entities: true
+- ask_feedback:
+    use_entities: true
+- bot_challenge:
+    use_entities: true
+- deny:
+    use_entities: true
+- give_feedback
+- goodbye:
     use_entities: true
 - greet:
     use_entities: true
-- goodbye:
-    use_entities: true
-- affirm:
-    use_entities: true
-- deny:
+- knowledge_question:
     use_entities: true
 - mood_great:
     use_entities: true
 - mood_unhappy:
     use_entities: true
-- bot_challenge:
-    use_entities: true
 - nlu_fallback:
     use_entities: true
-entities: []
-slots: {}
+slots:
+  feedback_boolean:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: feedback_boolean
+      conditions:
+      - active_loop: user_feedback_form
+  feedback_text:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: feedback_text
+      conditions:
+      - active_loop: user_feedback_form
 responses:
   utter_greet:
   - text: Hey! How are you?
@@ -38,12 +59,35 @@ responses:
   utter_goodbye:
   - text: Bye
   utter_iamabot:
-  - text: I am a bot, powered by Rasa.
+  - text: I am a SnippetSage, the Gandalf to your Middle Earth coding journey!
   utter_search_results:
-  - text: "Here are the search results:"
-  - text: "{{ search_results }}"
-
+  - text: 'Here are the search results:'
+  - text: '{{ search_results }}'
+  utter_ask_user_feedback_form_feedback_boolean:
+  - text: Were you satisfied with the results I provided?
+  utter_ask_user_feedback_form_feedback_text:
+  - text: Please tell me what I could do to improve the results or what question you were asking me.
+  utter_submit:
+  - text: Thank you very much for giving the following feedback! I will use it to improve my status from a Grey Wizard to a White Wizard
+  utter_slots_values:
+  - text: You provided me with the following feedback; {feedback_boolean} with {feedback_text}
 actions:
 - call_haystack
-forms: {}
-e2e_actions: []
+- utter_ask_user_feedback_form_feedback_boolean
+- utter_ask_user_feedback_form_feedback_text
+- utter_cheer_up
+- utter_did_that_help
+forms:
+  user_feedback_form:
+    ignored_intents:
+    - knowledge_question
+    - greet
+    - goodbye
+    - affirm
+    - deny
+    - mood_great
+    - mood_unhappy
+    - bot_challenge
+    required_slots:
+    - feedback_boolean
+    - feedback_text

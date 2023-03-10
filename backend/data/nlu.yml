@@ -1,5 +1,4 @@
-version: "2.0"
-
+version: "3.1"
 nlu:
 - intent: knowledge_question
   examples: |
@@ -11,7 +10,15 @@ nlu:
     - Look this up: where is?
     - Can you check: where is?
     - please check: where is ?
-
+    - I want to know how Fibonacci works
+    - What is an array?
+    - What is fibonacci?
+- intent: ask_feedback
+  examples: |
+    - Can I give you feedback?
+    - I want to give you feedback
+    - Feedback
+    - feedback
 - intent: greet
   examples: |
     - hey
@@ -27,7 +34,7 @@ nlu:
     - goodmorning
     - goodevening
     - good afternoon
-
+    - Hi
 - intent: goodbye
   examples: |
     - good afternoon
@@ -41,7 +48,6 @@ nlu:
     - see you around
     - bye bye
     - see you later
-
 - intent: affirm
   examples: |
     - yes
@@ -50,54 +56,37 @@ nlu:
     - of course
     - that sounds good
     - correct
-
-- intent: deny
+    - Yes
+- intent: give_feedback
   examples: |
-    - no
-    - n
+    - [no] (feedback_boolean)
+    - [n] (feedback_boolean)
     - never
     - I don't think so
     - don't like that
     - no way
     - not really
-
-- intent: mood_great
-  examples: |
-    - perfect
+    - [perfect] (feedback_boolean)
     - great
     - amazing
-    - feeling like a king
     - wonderful
-    - I am feeling very good
-    - I am great
-    - I am amazing
-    - I am going to save the world
-    - super stoked
     - extremely good
     - so so perfect
     - so good
     - so perfect
-
-- intent: mood_unhappy
-  examples: |
-    - my day was horrible
-    - I am sad
-    - I don't feel very well
-    - I am disappointed
-    - super sad
-    - I'm so sad
-    - sad
-    - very sad
-    - unhappy
-    - not good
+    - [not good] (feedback_boolean)
     - not very good
     - extremly sad
-    - so saad
-    - so sad
-
+    - [No](feedback_boolean)
+    - [Use array plainly](feedback_text)
+    - [No](feedback_boolean)
+    - I expect an array to be shorter
 - intent: bot_challenge
   examples: |
     - are you a bot?
     - are you a human?
     - am I talking to a bot?
     - am I talking to a human?
+- intent: nlu_fallback
+  examples: |
+    - true

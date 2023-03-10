@@ -1,4 +1,4 @@
-version: "2.0"
+version: "3.1"
 
 rules:
 
@@ -6,6 +6,8 @@ rules:
   steps:
   - intent: knowledge_question
   - action: call_haystack
+  - action: user_feedback_form
+  - active_loop: user_feedback_form
 
 - rule: Say goodbye anytime the user says goodbye
   steps:
@@ -21,3 +23,32 @@ rules:
   steps:
     - intent: nlu_fallback
     - action: call_haystack
+
+- rule: Trigger feedbackloop
+  steps:
+  - intent: ask_feedback
+  - action: user_feedback_form
+  - active_loop: user_feedback_form
+
+- rule: Submit feedbackloop
+  condition: 
+  - active_loop: user_feedback_form
+  steps:
+  - action: user_feedback_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: utter_submit
+  - action: utter_slots_values
+
+- rule: Interruption in feedback Form
+  condition:
+  # Condition that form is active.
+  - active_loop: user_feedback_form
+  steps:
+  # This unhappy path handles the case of an intent `bot_challenge`.
+  - intent: bot_challenge
+  - action: utter_iamabot
+  # Return to form after handling the `bot_challenge` intent
+  - action: user_feedback_form
+  - active_loop: user_feedback_form
