@@ -60,5 +60,26 @@ To install the project, follow these steps:
 
 ## Usage
 ## Contributing
+
+Contributions to the project are welcome. To contribute, follow these steps:
+
+1. Fork the repository.  
+2. Create a new branch for your changes:  
+
+`git checkout -b my-new-branch`  
+
+
+3. Make your changes and commit them:  
+
+`git commit -am 'Add some feature'`  
+
+
+4. Push your changes to your fork:  
+
+`git push origin my-new-branch`  
+
+
+5. Create a pull request on GitHub.  
+
 ## License
 This project is licensed under the GNU3 License - see the [LICENSE.md](LICENSE.md) file for details.
