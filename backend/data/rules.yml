@@ -9,6 +9,11 @@ rules:
   - action: user_feedback_form
   - active_loop: user_feedback_form
 
+- rule: Query Haystack anytime the user has a direct question for your document base
+  steps:
+  - intent: got_question
+  - action: call_GOT
+
 - rule: Say goodbye anytime the user says goodbye
   steps:
   - intent: goodbye

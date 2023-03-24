@@ -122,3 +122,27 @@ class Encoder:
         input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
         return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
 
+class ActionHaystack(Action):
+
+    def name(self) -> Text:
+        return "call_GOT"
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+
+        url = "http://localhost:8000/query"
+        payload = {"query": str(tracker.latest_message["text"])}
+        headers = {
+            'Content-Type': 'application/json'
+        }
+        response = requests.request("POST", url, headers=headers, json=payload).json()
+
+        if response["answers"]:
+            answer = response["answers"][0]["answer"]
+        else:
+            answer = "No Answer Found!"
+
+        dispatcher.utter_message(text=answer)
+
+        return []

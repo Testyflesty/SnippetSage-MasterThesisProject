@@ -13,12 +13,19 @@ nlu:
     - I want to know how Fibonacci works
     - What is an array?
     - What is fibonacci?
+    
 - intent: ask_feedback
   examples: |
     - Can I give you feedback?
     - I want to give you feedback
     - Feedback
     - feedback
+
+- intent: got_question
+  examples: |
+    - What is the capital of germany?
+
+
 - intent: greet
   examples: |
     - hey

@@ -10,6 +10,8 @@ entities:
 intents:
 - affirm:
     use_entities: true
+- got_question:
+    use_entities: true
 - ask_feedback:
     use_entities: true
 - bot_challenge:
@@ -78,6 +80,7 @@ actions:
 - utter_ask_user_feedback_form_feedback_text
 - utter_cheer_up
 - utter_did_that_help
+- call_GOT
 forms:
   user_feedback_form:
     ignored_intents:
