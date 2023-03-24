@@ -1,4 +1,3 @@
-from haystack.document_stores import ElasticsearchDocumentStore
 from tqdm import tqdm
 import json
 import os
@@ -6,10 +5,9 @@ import sys
 from transformers import AutoModel, AutoTokenizer
 import torch
 import torch.nn.functional as F
-from haystack.nodes import EmbeddingRetriever
-from haystack.pipelines import ExtractiveQAPipeline
 from elasticsearch import Elasticsearch
-
+import pickle
+from tqdm import tqdm
 # Connect to the Elastic instance and create a document store.
 # document_store = ElasticsearchDocumentStore(
 #     host="localhost",
@@ -218,6 +216,41 @@ def create_indices():
 # # You should see a document for "The Rains of Castamere", which is the
 # # episode the Red Wedding occurred in, so a very relevant response.
 # print_documents(result, max_text_len=100, print_name=True, print_meta=True)
+def stacqIndex():
+    es_client = Elasticsearch("https://localhost:9200", http_auth=("elastic", "jCJ2SMeF5mDqXMPlvs92"),  verify_certs=False, )
+    es_client.ping()
+    es_client.indices.delete(index='stacq', ignore=[400, 404])
+    # Load CodeBERT pre-trained model and tokenizer
+    model_name = "hamzab/codebert_code_search"
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModel.from_pretrained(model_name)
+
+    # Load text and code snippets from pickle files
+    with open("./text_word_vocab.pickle", "rb") as f:
+        text = pickle.load(f)
+
+    with open("./code_token_vocab.pickle", "rb") as f:
+        code = pickle.load(f)
+
+    # Convert text and code snippets to embeddings
+    text_embeddings = []
+    for t in tqdm(text):
+        inputs = tokenizer(t, return_tensors="pt", padding=True, truncation=True)
+        with torch.no_grad():
+            outputs = model(**inputs)
+        embedding = outputs.last_hidden_state.mean(dim=1).squeeze()
+        text_embeddings.append(embedding.numpy())
+
+    code_embeddings = []
+    for c in tqdm(code):
+        inputs = tokenizer(c, return_tensors="pt", padding=True, truncation=True)
+        with torch.no_grad():
+            outputs = model(**inputs)
+        embedding = outputs.last_hidden_state.mean(dim=1).squeeze()
+        code_embeddings.append(embedding.numpy())
+
+
+
 def testsearch():
     es_client = Elasticsearch("https://localhost:9200", http_auth=("elastic", "jCJ2SMeF5mDqXMPlvs92"),  verify_certs=False)
     index_name = "intentify"
