@@ -240,6 +240,7 @@ def stacqIndex():
             outputs = model(**inputs)
         embedding = outputs.last_hidden_state.mean(dim=1).squeeze()
         text_embeddings.append(embedding.numpy())
+    es_client.bulk(index='stacq_text', body=text_embeddings)
 
     code_embeddings = []
     for c in tqdm(code):
@@ -248,6 +249,7 @@ def stacqIndex():
             outputs = model(**inputs)
         embedding = outputs.last_hidden_state.mean(dim=1).squeeze()
         code_embeddings.append(embedding.numpy())
+    es_client.bulk(index='stacq_code', body=code_embeddings)
 
 
 
