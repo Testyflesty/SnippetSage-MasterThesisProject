@@ -79,6 +79,6 @@ if __name__ == "__main__":
     # Create the embedding map in ElasticSearch
     map = MultiCodeEmbeddingMap()
     map.setup_index()
-    staqd = "/home/wzwietering/Chris/StackOverflow-Question-Code-Dataset/annotation_tool/data/code_solution_labeled_data/source/python_how_to_do_it_by_classifier_multiple_iid_to_code.pickle"
-    question_titles = "/home/wzwietering/Chris/StackOverflow-Question-Code-Dataset/annotation_tool/data/code_solution_labeled_data/source/python_how_to_do_it_by_classifier_multiple_qid_to_title.pickle"
+    staqd = "python_how_to_do_it_by_classifier_multiple_iid_to_code.pickle"
+    question_titles = "python_how_to_do_it_by_classifier_multiple_qid_to_title.pickle"
     map.map_from_pickle(staqd, question_titles)
