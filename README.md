@@ -39,7 +39,7 @@ The project requires the following main dependencies:
 - Rasa 3.4.1
 
 For more dependencies check the requirements.txt file in the backend folder. This can be installed using <br/>
-`pip install requirements.txt`
+`pip install -r requirements.txt`
 
 
 ## Installation
