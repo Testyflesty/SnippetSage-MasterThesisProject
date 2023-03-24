@@ -218,38 +218,70 @@ def create_indices():
 # print_documents(result, max_text_len=100, print_name=True, print_meta=True)
 def stacqIndex():
     es_client = Elasticsearch("https://localhost:9200", http_auth=("elastic", "jCJ2SMeF5mDqXMPlvs92"),  verify_certs=False, )
-    es_client.ping()
-    es_client.indices.delete(index='stacq', ignore=[400, 404])
+    es_client.ping()    
+
+
+    question_mapping = {
+        "mappings": {
+            "properties": {
+                "question_id": {"type": "integer"},
+                "question_text": {"type": "text"},
+                "question_emb": {"type": "dense_vector", "dims": 768, "index": True,
+                "similarity": "cosine"},      
+                }
+        }
+    }
+    
+    code_mapping = {
+        "mappings": {
+            "properties": {
+                "question_id": {"type": "integer"},
+                "code_snippet": {"type": "text"},
+                "code_emb": {"type": "dense_vector", "dims": 768, "index": True,
+                "similarity": "cosine"},       
+                }
+        }
+    }
+
+    if not es_client.indices.exists(index="questions"):
+        es_client.indices.create(index="questions", body=question_mapping)    
+    if not es_client.indices.exists(index="code_snippets"):
+        es_client.indices.create(index="code_snippets", body=code_mapping)
     # Load CodeBERT pre-trained model and tokenizer
     model_name = "hamzab/codebert_code_search"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModel.from_pretrained(model_name)
 
     # Load text and code snippets from pickle files
-    with open("./text_word_vocab.pickle", "rb") as f:
+    with open("./python_how_to_do_it_qid_by_classifier_unlabeled_single_code_answer_qid_to_title.pickle", "rb") as f:
         text = pickle.load(f)
 
-    with open("./code_token_vocab.pickle", "rb") as f:
+    with open("./python_how_to_do_it_qid_by_classifier_unlabeled_single_code_answer_qid_to_code.pickle", "rb") as f:
         code = pickle.load(f)
 
     # Convert text and code snippets to embeddings
-    text_embeddings = []
-    for t in tqdm(text):
-        inputs = tokenizer(t, return_tensors="pt", padding=True, truncation=True)
+    for question_id, question in tqdm(list(text.items())[:100]):
+        inputs = tokenizer(question, return_tensors="pt", padding=True, truncation=True)
         with torch.no_grad():
             outputs = model(**inputs)
         embedding = outputs.last_hidden_state.mean(dim=1).squeeze()
-        text_embeddings.append(embedding.numpy())
-    es_client.bulk(index='stacq_text', body=text_embeddings)
+        body = {"question_id": question_id, "question": question, "question_emb": embedding.numpy()}
+        if es_client.exists(index="questions", id=question_id):
+            print(f"Question {question_id} already indexed, skipping")
+            continue
+        
+        es_client.index(index='questions', id=question_id, body=body)
 
-    code_embeddings = []
-    for c in tqdm(code):
-        inputs = tokenizer(c, return_tensors="pt", padding=True, truncation=True)
+    for question_id, code in tqdm(list(code.items())[:100]):
+        inputs = tokenizer(code, return_tensors="pt", padding=True, truncation=True)
         with torch.no_grad():
             outputs = model(**inputs)
         embedding = outputs.last_hidden_state.mean(dim=1).squeeze()
-        code_embeddings.append(embedding.numpy())
-    es_client.bulk(index='stacq_code', body=code_embeddings)
+        body = {"question_id": question_id, "code_snippet": code, "code_emb": embedding.numpy()}
+        if es_client.exists(index="code_snippets", id=question_id):
+            print(f"Answer to question {question_id} already indexed, skipping")
+            continue
+        es_client.index(index='code_snippets',id=question_id, body=body)
 
 
 
@@ -258,6 +290,14 @@ def testsearch():
     index_name = "intentify"
 
     search("database connect", es_client, "hamzab/codebert_code_search", index_name)
+    
+
+def stacqsearch():
+    es_client = Elasticsearch("https://localhost:9200", http_auth=("elastic", "jCJ2SMeF5mDqXMPlvs92"),  verify_certs=False)
+    index_name = "questions"
+
+    searchstacq("How to make an array?", es_client, "hamzab/codebert_code_search", index_name)
+   
 
 def search(query: str, es_client: Elasticsearch, model: str, index: str, top_k: int = 10):
 
@@ -289,6 +329,34 @@ def search(query: str, es_client: Elasticsearch, model: str, index: str, top_k: 
 
         print("=====================================================================\n")
         
+def searchstacq(query: str, es_client: Elasticsearch, model: str, index: str, top_k: int = 10):
+
+    encoder = Encoder(model)
+    query_vector = encoder.encode(query, max_length=64)
+    query_dict = {
+        "knn":{
+        "field": "question_emb",
+        "query_vector": query_vector[0].tolist(),
+        "k": 10,
+        "num_candidates": top_k
+        },
+        "fields":["question_id","question",
+                        "question_emb"]
+    }
+    res = es_client.search(index=index, body=query_dict)
+
+    for hit in res["hits"]["hits"]:
+        print(f"Document ID: {hit['_source']['question_id']}")
+        print(f"Document Score: {hit['_score']}")
+        print(f"Document Title: {hit['_source']['question']}")
+        search_result = es_client.search(index="code_snippets", q=f"question_id:{hit['_source']['question_id']}")
+        for code_hit in search_result["hits"]["hits"]:
+            print(f"Code: {code_hit['_source']['code_snippet']}")
+            print(f"Code Embeddings: {code_hit['_source']['code_emb']}")
+
+        # print(f"Document Embedding: {hit['_source']['question_emb']}")
+        
+
 
 
 if __name__ == '__main__':
