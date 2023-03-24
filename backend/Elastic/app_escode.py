@@ -115,13 +115,16 @@ class JsonlCollectionIterator:
 
 
 class Encoder:
-    def __init__(self, model_name: str):
+    def __init__(self, model_name: str, use_cuda: bool=True):
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModel.from_pretrained(model_name)
+        self.device = torch.device("cuda" if use_cuda else "cpu")
+        self.model = self.model.to(self.device)
 
 
     def encode(self, text:str, max_length: int):
         inputs = self.tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=max_length)
+        inputs = inputs.to(self.device)
 
         with torch.no_grad():
             model_output = self.model(**inputs, return_dict=True)
