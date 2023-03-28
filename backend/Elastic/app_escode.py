@@ -8,6 +8,14 @@ import torch.nn.functional as F
 from elasticsearch import Elasticsearch
 import pickle
 from tqdm import tqdm
+
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+from mpl_toolkits.mplot3d import Axes3D
+
 # Connect to the Elastic instance and create a document store.
 # document_store = ElasticsearchDocumentStore(
 #     host="localhost",
@@ -115,7 +123,7 @@ class JsonlCollectionIterator:
 
 
 class Encoder:
-    def __init__(self, model_name: str, use_cuda: bool=True):
+    def __init__(self, model_name: str, use_cuda: bool=False):
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModel.from_pretrained(model_name)
         self.device = torch.device("cuda" if use_cuda else "cpu")
@@ -222,6 +230,8 @@ def create_indices():
 def stacqIndex():
     es_client = Elasticsearch("https://localhost:9200", http_auth=("elastic", "jCJ2SMeF5mDqXMPlvs92"),  verify_certs=False, )
     es_client.ping()    
+    # es_client.indices.delete(index='questions', ignore=[400, 404])
+    # es_client.indices.delete(index='code_snippets', ignore=[400, 404])
 
 
     question_mapping = {
@@ -253,7 +263,9 @@ def stacqIndex():
     # Load CodeBERT pre-trained model and tokenizer
     model_name = "hamzab/codebert_code_search"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
+    tokenizer_questions = AutoTokenizer.from_pretrained('bert-base-uncased')
     model = AutoModel.from_pretrained(model_name)
+    model_questions = AutoModel.from_pretrained('bert-base-uncased')
 
     # Load text and code snippets from pickle files
     with open("./python_how_to_do_it_qid_by_classifier_unlabeled_single_code_answer_qid_to_title.pickle", "rb") as f:
@@ -263,10 +275,10 @@ def stacqIndex():
         code = pickle.load(f)
 
     # Convert text and code snippets to embeddings
-    for question_id, question in tqdm(list(text.items())[:100]):
-        inputs = tokenizer(question, return_tensors="pt", padding=True, truncation=True)
+    for question_id, question in tqdm(text.items()):
+        inputs = tokenizer_questions(question, return_tensors="pt", padding=True, truncation=True)
         with torch.no_grad():
-            outputs = model(**inputs)
+            outputs = model_questions(**inputs)
         embedding = outputs.last_hidden_state.mean(dim=1).squeeze()
         body = {"question_id": question_id, "question": question, "question_emb": embedding.numpy()}
         if es_client.exists(index="questions", id=question_id):
@@ -275,7 +287,7 @@ def stacqIndex():
         
         es_client.index(index='questions', id=question_id, body=body)
 
-    for question_id, code in tqdm(list(code.items())[:100]):
+    for question_id, code in tqdm(code.items()):
         inputs = tokenizer(code, return_tensors="pt", padding=True, truncation=True)
         with torch.no_grad():
             outputs = model(**inputs)
@@ -358,9 +370,86 @@ def searchstacq(query: str, es_client: Elasticsearch, model: str, index: str, to
             print(f"Code Embeddings: {code_hit['_source']['code_emb']}")
 
         # print(f"Document Embedding: {hit['_source']['question_emb']}")
+     
         
+def plotclusters():
+    es_client = Elasticsearch("https://localhost:9200", http_auth=("elastic", "jCJ2SMeF5mDqXMPlvs92"),  verify_certs=False)
+    index_name = "code_snippets"
+    embeddings = es_client.search(index=index_name, body = {"query": {"match_all": {}}}, size=10000)
+    print(len(embeddings))
+    # print(embeddings)
+    numpembedding = []
+    for hit in embeddings['hits']['hits']:
+        numpembedding.append(hit['_source']['code_emb'])
+        
+    numpembedding = np.array(numpembedding)
+    # Set the number of clusters and target dimensions
+    num_clusters = 3
+    target_dimensions = 25  # Choose a suitable target dimension value
+
+    # Perform PCA to reduce the dimensionality of the embeddings
+    # pca = PCA(n_components=target_dimensions)
+    # reduced_embeddings = pca.fit_transform(numpembedding)
+
+    # # Create a KMeans instance
+    kmeans = KMeans(n_clusters=num_clusters, random_state=0)
+
+    # # Fit the KMeans model to the reduced embeddings
+    # kmeans.fit(numpembedding)
+
+    # # Get the cluster assignments for each embedding
+    # cluster_assignments = kmeans.labels_
+
+    # # Perform dimensionality reduction using t-SNE
+    # tsne = TSNE(n_components=3, random_state=0)
+    # embeddings_3d = tsne.fit_transform(numpembedding)
 
 
+    # # Define markers and colors for each cluster
+    # markers = ['o', 's', 'v', '^', '<', '>', '1', '2', '3', '4']
+    # colors = ['r', 'g', 'b', 'c', 'm', 'y', 'k', 'w']
+
+    # # Visualize the clusters using matplotlib
+    # fig = plt.figure(figsize=(10, 8))
+    # ax = fig.add_subplot(111, projection='3d')
+
+    # for cluster in range(num_clusters):
+    #     x = embeddings_3d[cluster_assignments == cluster, 0]
+    #     y = embeddings_3d[cluster_assignments == cluster, 1]
+    #     z = embeddings_3d[cluster_assignments == cluster, 2]
+    #     marker = markers[cluster % len(markers)]
+    #     color = colors[cluster % len(colors)]
+    #     ax.scatter(x, y, z, marker=marker, color=color, label=f'Cluster {cluster}', alpha=0.7)
+
+    # ax.legend()
+    # ax.set_title('Clusters of code embeddings')
+    # ax.set_xlabel('t-SNE 1')
+    # ax.set_ylabel('t-SNE 2')
+    # ax.set_zlabel('t-SNE 3')
+    # plt.show()
+    
+        # Fit the KMeans model to your embeddings
+    kmeans.fit(numpembedding)
+
+    # Get the cluster assignments for each embedding
+    cluster_assignments = kmeans.labels_
+
+    # Perform dimensionality reduction using t-SNE
+    tsne = TSNE(n_components=2, random_state=0)
+    embeddings_2d = tsne.fit_transform(numpembedding)
+
+    # Visualize the clusters using matplotlib
+    plt.figure(figsize=(10, 8))
+    for cluster in range(num_clusters):
+        plt.scatter(embeddings_2d[cluster_assignments == cluster, 0],
+                    embeddings_2d[cluster_assignments == cluster, 1],
+                    label=f'Cluster {cluster}', alpha=0.7)
+
+    plt.legend()
+    plt.title('Clusters of code embeddings')
+    plt.xlabel('t-SNE 1')
+    plt.ylabel('t-SNE 2')
+    plt.show()
 
 if __name__ == '__main__':
     globals()[sys.argv[1]]()

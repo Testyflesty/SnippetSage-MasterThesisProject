@@ -44,6 +44,15 @@ For more dependencies check the requirements.txt file in the backend folder. Thi
 
 ## Installation
 TODO update the elasticsearch backend commands
+First setup the ElasticSearch Data Index Backend: 
+
+1. Go to the Elastic code:  
+`cd backend/Elastic`
+
+2. Alter the code and create the indices for the input data:  
+
+`python3 -W ignore -c 'import app_escode; app_escode.stacqIndex()'`
+
 To install the project, follow these steps:
 
 1. Clone the repository:  

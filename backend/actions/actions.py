@@ -23,15 +23,51 @@ class ActionElastic(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         es_client = Elasticsearch("https://localhost:9200", http_auth=("elastic", "jCJ2SMeF5mDqXMPlvs92"),  verify_certs=False)
-        index_name = "intentify"
+        index_name = "questions"
 
-        response = search(tracker.latest_message["text"], es_client, "hamzab/codebert_code_search", index_name, 2500)
+        # response = search(tracker.latest_message["text"], es_client, "hamzab/codebert_code_search", index_name, 2500)
+
+    
+        response = searchstacq(tracker.latest_message["text"], es_client, "hamzab/codebert_code_search", index_name, 2500)
 
         answer = response
 
         dispatcher.utter_message(text=answer)
 
         return []
+    
+def searchstacq(query: str, es_client: Elasticsearch, model: str, index: str, top_k: int = 10):
+
+    encoder = Encoder(model)
+    query_vector = encoder.encode(query, max_length=64)
+    query_dict = {
+        "knn":{
+        "field": "question_emb",
+        "query_vector": query_vector[0].tolist(),
+        "k": 3,
+        "num_candidates": top_k
+        },
+        "fields":["question_id","question",
+                        "question_emb"]
+    }
+    res = es_client.search(index=index, body=query_dict)
+    resultstring = "I found the following 3 questions for you that match an answer: <br/>"
+
+    for id, hit in enumerate(res["hits"]["hits"]):
+        resultstring += str(id+1)
+
+        resultstring += " " + hit['_source']['question'] 
+
+        search_result = es_client.search(index="code_snippets", q=f"question_id:{hit['_source']['question_id']}")
+        for code_hit in search_result["hits"]["hits"]:
+            print(f"Code: {code_hit['_source']['code_snippet']}")
+            print(f"Code Embeddings: {code_hit['_source']['code_emb']}")
+            code = code_hit['_source']['code_snippet']
+            print(resultstring)
+            print(str(id+1))
+            resultstring += ": <br/><p> <pre class='language-python'><code class='language-python hljs'> " + str(code) + "</code></pre></p>"
+
+    return resultstring   
     
 def search(query: str, es_client: Elasticsearch, model: str, index: str, top_k: int = 10):
 
