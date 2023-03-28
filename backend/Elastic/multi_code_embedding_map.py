@@ -18,15 +18,20 @@ class MultiCodeEmbeddingMap:
             url, http_auth=(username, password), verify_certs=False
         )
 
-    def map_from_pickle(self, path: str) -> None:
+    def map_from_pickle(self, path: str, question_titles: str) -> None:
         # Load the embedding map from a pickle file
         with open(path, "rb") as f:
             code_snippets = pickle.load(f)
+        with open(question_titles, "rb") as f:
+            questions = pickle.load(f)
 
         encoder = Encoder("hamzab/codebert_code_search")
         for question_id, code_snippet_index in tqdm(code_snippets):
             code = code_snippets[(question_id, code_snippet_index)]
-            embedding = encoder.encode(code, 512)
+            question = questions.get(question_id, None)
+            if question is None:
+                continue
+            embedding = encoder.encode(question, 512)
             self.insert(embedding[0], question_id, code_snippet_index, code)
 
     def insert(
@@ -74,5 +79,6 @@ if __name__ == "__main__":
     # Create the embedding map in ElasticSearch
     map = MultiCodeEmbeddingMap()
     map.setup_index()
-    staqd = "/home/wzwietering/Chris/StackOverflow-Question-Code-Dataset/annotation_tool/data/code_solution_labeled_data/source/python_how_to_do_it_by_classifier_multiple_iid_to_code.pickle"
-    map.map_from_pickle(staqd)
+    staqd = "python_how_to_do_it_by_classifier_multiple_iid_to_code.pickle"
+    question_titles = "python_how_to_do_it_by_classifier_multiple_qid_to_title.pickle"
+    map.map_from_pickle(staqd, question_titles)
