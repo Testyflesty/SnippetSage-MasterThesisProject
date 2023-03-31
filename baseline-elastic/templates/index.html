@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Baseline Semantic Code Search</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/default.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-lg-6">
+          <form onsubmit="search(event)">
+            <div class="input-group mb-3">
+              <input
+                type="text"
+                class="form-control"
+                name="query"
+                placeholder="Search"
+                aria-label="Search"
+                aria-describedby="search-button"
+              />
+              <div class="input-group-append">
+                <button
+                  class="btn btn-outline-secondary"
+                  type="submit"
+                  id="search-button"
+                >
+                  Search
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-6">
+          <ul id="results"></ul>
+        </div>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+      function search(event) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        fetch('/search', {
+          method: 'POST',
+          body: formData
+        })
+          .then(response => response.json())
+          .then(data => {
+            const results = document.querySelector('#results');
+            results.innerHTML = '';
+            data.forEach(result => {
+              const li = document.createElement('li');
+              const a = document.createElement('a');
+              const pre = document.createElement('pre');
+              const code = document.createElement('code');
+              code.innerHTML = result._source.code;
+              pre.appendChild(code);
+              pre.classList.add('rounded', 'bg-light', 'p-2');
+              a.href = result._source.question;
+              a.textContent = result._source.question + ' - ' + result._score;
+              li.appendChild(a);
+              li.appendChild(pre);
+              results.appendChild(li);
+            });
+            hljs.highlightAll();
+          })
+          .catch(error => console.error(error));
+      }
+    </script>
+  </body>
+</html>

@@ -28,7 +28,7 @@ class ActionElastic(Action):
         # response = search(tracker.latest_message["text"], es_client, "hamzab/codebert_code_search", index_name, 2500)
 
     
-        response = searchstacq(tracker.latest_message["text"], es_client, "hamzab/codebert_code_search", index_name, 2500)
+        response = searchstacq(tracker.latest_message["text"], es_client, "bert-base-uncased", index_name, 2500)
 
         answer = response
 
@@ -51,7 +51,7 @@ def searchstacq(query: str, es_client: Elasticsearch, model: str, index: str, to
                         "question_emb"]
     }
     res = es_client.search(index=index, body=query_dict)
-    resultstring = "I found the following 3 questions for you that match an answer: <br/>"
+    resultstring = "I found the following 3 questions for you that match an answer:"
 
     for id, hit in enumerate(res["hits"]["hits"]):
         resultstring += str(id+1)
@@ -65,7 +65,7 @@ def searchstacq(query: str, es_client: Elasticsearch, model: str, index: str, to
             code = code_hit['_source']['code_snippet']
             print(resultstring)
             print(str(id+1))
-            resultstring += ": <br/><p> <pre class='language-python'><code class='language-python hljs'> " + str(code) + "</code></pre></p>"
+            resultstring += ":```" + str(code) + "```"
 
     return resultstring   
     
