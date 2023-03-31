@@ -50,7 +50,7 @@ export default {
   name: "Chat",
   data() {
     return {
-      messages: [],
+      messages: [{id: 0, text:"Hello there, my name is Snippetsage, I can help you find code snippets. What are you looking for?", isBot: true}],
       userMessage: "",
       botIsTyping: false,
     };
@@ -90,7 +90,7 @@ export default {
   });
 
   this.userMessage = "";
-
+  this.botIsTyping = false;
   if (response.data[0].text.startsWith("I found")) {
     const searchQuery = response.data[0].text.split(":")[1].trim();
     this.recentSearches.unshift(searchQuery);
