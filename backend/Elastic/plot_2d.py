@@ -63,45 +63,6 @@ if __name__ == '__main__':
     # # Create a KMeans instance
     kmeans = KMeans(n_clusters=num_clusters, random_state=0)
 
-
-    # # Fit the model to the embeddings
-    # kmeans.fit(numpembedding)
-
-    # # Get the cluster assignments for each embedding
-    # cluster_assignments = kmeans.predict(numpembedding)
-
-    # # Store the cluster assignments in a file
-    # np.save('cluster_assignments.npy', cluster_assignments)
-    # # # Fit the KMeans model to the reduced embeddings
- 
-    
-    # # centers = kmeans.cluster_centers_
-
-    # # # calculate the distance matrix between cluster centers
-    # # dist_matrix = np.zeros((3,3))
-    # # for i in range(3):
-    # #     for j in range(i+1, 3):
-    # #         dist_matrix[i,j] = np.linalg.norm(centers[i]-centers[j])
-    # #         dist_matrix[j,i] = dist_matrix[i,j]
-
-
-    # # sort the clusters by their distance from each other
-    # cluster_order = np.argsort(np.sum(dist_matrix, axis=1))
-
-    # # get the indices of the farthest apart questions for each cluster
-    # indices = []
-    # for i in cluster_order:
-    #     mask = kmeans.labels_ == i
-    #     dist = np.linalg.norm(embeddings - centers[i], axis=1)
-    #     farthest = np.argsort(dist)[-5:]
-    #     indices.append(farthest[mask])
-
-    # # print the questions for each cluster
-    # for i, idx in enumerate(indices):
-    #     print(f"Cluster {i}:")
-    #     for j in idx:
-    #         print(embeddings["hits"]["hits"][j]["_source"]["question"])
-
     kmeans.fit(numpembedding)
 
     # Get the cluster assignments for each embedding

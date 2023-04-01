@@ -12,6 +12,7 @@ import torch.nn.functional as F
 from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
 import requests
+import json
 
 
 class ActionElastic(Action):
@@ -46,28 +47,20 @@ def searchstacq(query: str, es_client: Elasticsearch, model: str, index: str, to
         "query_vector": query_vector[0].tolist(),
         "k": 3,
         "num_candidates": top_k
-        },
-        "fields":["question_id","question",
-                        "question_emb"]
+        }
     }
     res = es_client.search(index=index, body=query_dict)
-    resultstring = "I found the following 3 questions for you that match an answer:"
+    results = res["hits"]["hits"]
 
     for id, hit in enumerate(res["hits"]["hits"]):
-        resultstring += str(id+1)
-
-        resultstring += " " + hit['_source']['question'] 
-
         search_result = es_client.search(index="code_snippets", q=f"question_id:{hit['_source']['question_id']}")
+        hit["_source"].pop("question_emb", None)
         for code_hit in search_result["hits"]["hits"]:
-            print(f"Code: {code_hit['_source']['code_snippet']}")
-            print(f"Code Embeddings: {code_hit['_source']['code_emb']}")
-            code = code_hit['_source']['code_snippet']
-            print(resultstring)
-            print(str(id+1))
-            resultstring += ":```" + str(code) + "```"
 
-    return resultstring   
+            code = '```' + code_hit['_source']['code_snippet'] + '```'
+            hit['_source']['code'] = code
+    
+    return json.dumps(results)   
     
 def search(query: str, es_client: Elasticsearch, model: str, index: str, top_k: int = 10):
 
