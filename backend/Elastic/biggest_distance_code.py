@@ -1,21 +1,31 @@
-from tqdm import tqdm
-import json
-import os
-import sys
-from transformers import AutoModel, AutoTokenizer
-import torch
-import torch.nn.functional as F
-from elasticsearch import Elasticsearch
-import pickle
-from tqdm import tqdm
-
+import plotly.express as px
+from scipy.spatial import distance
+from elasticsearch.helpers import scan
+from sklearn.cluster import KMeans
+from gensim import corpora, models
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.cluster import KMeans
-from sklearn.decomposition import PCA
-from sklearn.manifold import TSNE
-import annoy
-from mpl_toolkits.mplot3d import Axes3D
+from tqdm import tqdm
+from elasticsearch import Elasticsearch
+import nltk
+from nltk.corpus import stopwords
+from nltk.stem.wordnet import WordNetLemmatizer
+import re
+from sklearn.decomposition import LatentDirichletAllocation
+from sklearn.feature_extraction.text import CountVectorizer
+
+def preprocess_text(text):
+    text = re.sub(r'[^\w\s]', '', text).lower()
+
+    stop_words = set(stopwords.words('english'))
+    tokens = [token for token in text.split() if token not in stop_words]
+
+    lemmatizer = WordNetLemmatizer()
+    tokens = [lemmatizer.lemmatize(token) for token in tokens]
+
+    return tokens
+
+
 
 if __name__ == '__main__':
 
@@ -27,7 +37,6 @@ if __name__ == '__main__':
     index_name = "code_snippets"
     scroll_size = 1000
 
-    # get the initial search results and scroll ID
     query_dict = {
         "query": {
             "match_all": {}
@@ -38,11 +47,13 @@ if __name__ == '__main__':
     embeddings = es_client.search(index=index_name, body=query_dict, scroll="1m")
     scroll_id = embeddings["_scroll_id"]
     hits = embeddings["hits"]["hits"]
-    numpembedding = []
-
+    questions_and_embeddings= []
+    
     while hits:
         for hit in tqdm(hits):
-            numpembedding.append(hit['_source']['code_emb'])
+            code = hit['_source']['code_snippet']
+            embedding = hit['_source']['code_emb']
+            questions_and_embeddings.append((code, embedding))
             pass
 
         embeddings = es_client.scroll(scroll_id=scroll_id, scroll="1m")
@@ -50,56 +61,34 @@ if __name__ == '__main__':
 
     
         
-    numpembedding = np.array(numpembedding)
-    # Set the number of clusters and target dimensions
-    num_clusters = 3
-    target_dimensions = 25  # Choose a suitable target dimension value
 
-    # # Create a KMeans instance
-    kmeans = KMeans(n_clusters=num_clusters, random_state=0)
+    numpembedding = np.array([embedding for _, embedding in questions_and_embeddings]).reshape(-1, 1)
+    max_clusters = 10
 
-
-    # Fit the model to the embeddings
+    optimal_num_clusters = 5 
+    kmeans = KMeans(n_clusters=optimal_num_clusters, random_state=0)
     kmeans.fit(numpembedding)
 
+    num_topics = optimal_num_clusters
+    cluster_labels = kmeans.labels_
+    cluster_centers = kmeans.cluster_centers_
+    num_topics = 5  
+    
+    lda = LatentDirichletAllocation(n_components=num_topics, random_state=0)
 
-    # Get the cluster assignments for each embedding
-    cluster_assignments = kmeans.labels_
-
-    pca = PCA(n_components=25)
-    numpembedding = pca.fit_transform(numpembedding)
-  # Build an Annoy index with the embeddings
-    annoy_index = annoy.AnnoyIndex(target_dimensions, metric="angular")
-    for i, embedding in enumerate(numpembedding):
-        annoy_index.add_item(i, embedding)
-    annoy_index.build(n_trees=50)
-
-    # Print 3 questions for each cluster
-    for cluster in range(num_clusters):
-        # Get embeddings and questions for the current cluster
-        cluster_indices = np.where(kmeans.labels_ == cluster)[0]
-        cluster_embeddings = numpembedding[cluster_indices]
-        cluster_questions = [hits[i]['_source']['code_snippet'] for i in cluster_indices]
-
-        # Print header for current cluster
-        print(f"Cluster {cluster+1}:")
-
-        # Print 3 questions for the current cluster
-        for i in range(3):
-            if i < len(cluster_embeddings):
-                # Find the farthest questions for the current question
-                distances = [annoy_index.get_distance(i, j) for j in cluster_indices]
-                farthest_indices = np.argsort(distances)[-6:-1]
-                farthest_questions = [cluster_questions[j] for j in farthest_indices[::-1] if j != i]
-
-                # Print current question and its top 3 farthest questions
-                print(f"Code {i+1}: {cluster_questions[i]}")
-                if len(farthest_questions) > 0:
-                    print("Farthest code snippets:")
-                    for j, question in enumerate(farthest_questions[:3]):
-                        print(f"{j+1}. {question}")
-                else:
-                    print("No farthest code found for this code snippet.")
-                print()
-            else:
-                break
+    for cluster_id in range(optimal_num_clusters):
+        cluster_questions = [q for q, label in zip([q for q, _ in questions_and_embeddings], kmeans.labels_) if label == cluster_id]
+        
+        preprocessed_questions = [preprocess_text(q) for q in cluster_questions]
+        
+        vectorizer = CountVectorizer(stop_words='english')
+        bag_of_words = vectorizer.fit_transform([' '.join(q) for q in preprocessed_questions])
+        
+        lda.fit(bag_of_words)
+        topics = lda.components_.argsort()[:, ::-1]
+        feature_names = np.array(vectorizer.get_feature_names())
+        top_words = [feature_names[topics[i, :5]].tolist() for i in range(num_topics)]
+        
+        print(f'Cluster {cluster_id + 1}:')
+        for i, (question, words) in enumerate(zip(cluster_questions, top_words)):
+            print(f'  {i+1}. {question} --> {" ".join(words)}')
