@@ -27,7 +27,11 @@
               class="w-8 h-8 rounded-full ml-2"
             />
             <div class="bg-blue-500 text-white rounded-lg p-2">
-              {{ message.text }}
+              <Highlighter class="my-highlight" 
+                  highlightClassName="highlight"
+                  :searchWords="entities"
+                  :autoEscape="true"
+                  :textToHighlight="message.text"/>
             </div>
           </div>
         </div>
@@ -64,9 +68,13 @@ import "prismjs/themes/prism.css";
 import 'prismjs/components/prism-python';
 import "prismjs/plugins/line-numbers/prism-line-numbers.css";
 import "prismjs/plugins/line-numbers/prism-line-numbers.min.js";
+import Highlighter from 'vue-highlight-words'
 
 export default {
   name: "Chat",
+  components: {
+    Highlighter
+  },
   data() {
     return {
       messages: [{id: 0, text:"Hello there, my name is Snippetsage, I can help you find code snippets. What are you looking for?", isBot: true}],
@@ -75,9 +83,16 @@ export default {
       recentSearches: [],
       jsonResponse1: {},
       jsonResponse2: {},
+      
       textValues: [],
-      singleTextValue: ""
+      singleTextValue: "",
+      namedentities: {},
     };
+  },
+  computed: {
+    entities() {
+      return Object.keys(this.namedentities);
+    }
   },
   methods: {isJson(str) {
     try {
@@ -87,37 +102,91 @@ export default {
     }
     return true;
 },
+
     async sendMessage() {
-  this.botIsTyping = true;
-  this.messages.push({ id: 0, text: this.userMessage, isBot: false });
-  try{
-  const response = await axios.post("http://localhost:5005/webhooks/rest/webhook", {
-    message: this.userMessage,
-  });
-  this.jsonResponse1 = response.data[0];
-  this.jsonResponse2 = response.data[1];
-  this.messages.push({ id: 0, text: "I found the following questions that are semantically close to your question!", isBot: true });
+    this.botIsTyping = true;
+    this.messages.push({ id: 0, text: this.userMessage, isBot: false });
+    
+    try{
+      const response = await axios.post("http://localhost:5005/webhooks/rest/webhook", {
+      message: this.userMessage,
+    });
+    console.log(response.data[0])
+    const responseData = JSON.parse(response.data[0].text)
+    const results = responseData.results
 
-    if (Array.isArray(JSON.parse(this.jsonResponse1.text))) {
-        console.log(JSON.parse(this.jsonResponse1.text));
-        let answer = JSON.parse(this.jsonResponse1.text)
-        answer.forEach(element => {
-          this.messages.push({ id: 0, text: "Question: " + element._source.question + " with a score of " + element._score, isBot: true });
-          this.messages.push({ id: 0, text: element._source.code, isBot: true });
+    const intent = responseData.intent
+    const entities = responseData.entities
 
-        });
-          
-          }
-          if (typeof this.jsonResponse2.text === "string") {
-            this.singleTextValue = this.jsonResponse2.text;
-          }
-      } catch (error) {
+
+    // loop through the results array to get the questions and code snippets
+    for (let i = 0; i < results.length; i++) {
+      const question = results[i]._source.question
+      const codeSnippet = results[i]._source.code
+      const score = results[i]._score
+
+      this.messages.push({ id: 0, text: "Question: " + question + " with a score of " + score, isBot: true });
+      this.messages.push({ id: 0, text: codeSnippet, isBot: true });
+
+    }
+
+    for (let i = 0; i < entities.length; i++) {
+      const entity = entities[i].entity;
+      const name = entities[i].value;
+      this.namedentities[name]= entity;
+
+    }
+
+    const keyValuePairs = Object.entries(this.namedentities).map(([key, value]) => `${key}: ${value}`).join(', ');
+
+    this.messages.push({ id: 0, text: "I classified your question with the following intent: " + intent + " And found these entities: " + keyValuePairs, isBot: true });
+
+
+          } catch (error) {
         console.log(error);
       }
-  this.messages.push({ id: 0, text: this.singleTextValue, isBot: true });
+
+
+
+  // try{
+  // const response = await axios.post("http://localhost:5005/webhooks/rest/webhook", {
+  //   message: this.userMessage,
+  // });
+  
+  // this.jsonResponse1 = response.data[0];
+  // this.jsonResponse2 = response.data[1];
+  // this.messages.push({ id: 0, text: "I found the following questions that are semantically close to your question!", isBot: true });
+
+  // console.log(response)
+  // console.log(this.jsonResponse1)
+  // if(this.jsonResponse1.text == "I'm sorry I was unable to use intent modelling to classify your question to query the search engine. Could you please rephrase?"){
+  //   this.messages.push({ id: 0, text: this.jsonResponse1.text, isBot: true });
+  // } else{
+  //   if (Array.isArray(JSON.parse(this.jsonResponse1.text))) {
+  //       console.log(JSON.parse(this.jsonResponse1.text));
+  //       let answer = JSON.parse(this.jsonResponse1.text)
+  //       answer.forEach(element => {
+  //         this.messages.push({ id: 0, text: "Question: " + element._source.question + " with a score of " + element._score, isBot: true });
+  //         this.messages.push({ id: 0, text: element._source.code, isBot: true });
+
+  //       });
+          
+  //         } else {
+  //         if (typeof this.jsonResponse1.text === "string") {
+  //           this.singleTextValue = this.jsonResponse1.text;
+  //         }  
+  //         else if (typeof this.jsonResponse2.text === "string") {
+  //           this.singleTextValue = this.jsonResponse2.text;
+  //         }
+  //       }
+  //     }
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
   this.userMessage = "";
   this.botIsTyping = false;
-    },
+    }
+    ,
     isCode(text) {
       return text.startsWith("```") && text.endsWith("```");
     },

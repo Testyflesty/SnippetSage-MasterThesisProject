@@ -18,7 +18,8 @@
     "transformers": "^3.1.0",
     "util": "^0.12.5",
     "vue": "^3.2.47",
-    "vue-autosuggest": "^2.2.0"
+    "vue-autosuggest": "^2.2.0",
+    "vue-highlight-words": "^3.0.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.1.0",

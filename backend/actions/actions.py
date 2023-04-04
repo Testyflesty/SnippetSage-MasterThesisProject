@@ -28,16 +28,24 @@ class ActionElastic(Action):
 
         # response = search(tracker.latest_message["text"], es_client, "hamzab/codebert_code_search", index_name, 2500)
 
-    
-        response = searchstacq(tracker.latest_message["text"], es_client, "bert-base-uncased", index_name, 2500)
+        # Get the detected intent and entities
+        intent = tracker.latest_message['intent'].get('name')
+        entities = tracker.latest_message.get('entities')
 
-        answer = response
-
+        # Create a dictionary with the metadata
+        metadata = {
+            "intent": intent,
+            "entities": entities
+        }
+        response = searchstacq(tracker.latest_message["text"], es_client, "bert-base-uncased", index_name, 2500, metadata)
+        
+        answer = json.dumps(response)
+        print(answer)
         dispatcher.utter_message(text=answer)
 
         return []
     
-def searchstacq(query: str, es_client: Elasticsearch, model: str, index: str, top_k: int = 10):
+def searchstacq(query: str, es_client: Elasticsearch, model: str, index: str, top_k: int = 10, metadata: dict = {}):
 
     encoder = Encoder(model)
     query_vector = encoder.encode(query, max_length=64)
@@ -60,7 +68,13 @@ def searchstacq(query: str, es_client: Elasticsearch, model: str, index: str, to
             code = '```' + code_hit['_source']['code_snippet'] + '```'
             hit['_source']['code'] = code
     
-    return json.dumps(results)   
+    
+    response = {
+        "results": results,
+        "intent": metadata["intent"],
+        "entities": metadata["entities"]
+    }
+    return response
     
 def search(query: str, es_client: Elasticsearch, model: str, index: str, top_k: int = 10):
 
@@ -151,27 +165,3 @@ class Encoder:
         input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
         return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
 
-class ActionHaystack(Action):
-
-    def name(self) -> Text:
-        return "call_GOT"
-
-    def run(self, dispatcher: CollectingDispatcher,
-            tracker: Tracker,
-            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-
-        url = "http://localhost:8000/query"
-        payload = {"query": str(tracker.latest_message["text"])}
-        headers = {
-            'Content-Type': 'application/json'
-        }
-        response = requests.request("POST", url, headers=headers, json=payload).json()
-
-        if response["answers"]:
-            answer = response["answers"][0]["answer"]
-        else:
-            answer = "No Answer Found!"
-
-        dispatcher.utter_message(text=answer)
-
-        return []

@@ -2,17 +2,25 @@ version: "3.1"
 
 rules:
 
-- rule: Query Haystack anytime the user has a direct question for your document base
+- rule: Query elasticsearch with intent and entity recognition
   steps:
-  - intent: knowledge_question
+  - intent: code_search
   - action: call_haystack
-  - action: user_feedback_form
-  - active_loop: user_feedback_form
+  - action: utter_cheer_up
 
-- rule: Query Haystack anytime the user has a direct question for your document base
+
+- rule: Query elasticsearch with intent and entity recognition
   steps:
-  - intent: got_question
-  - action: call_GOT
+  - intent: code_example
+  - action: call_haystack
+  - action: utter_cheer_up
+
+
+- rule: Query elasticsearch with intent and entity recognition
+  steps:
+  - intent: code_concept
+  - action: call_haystack
+  - action: utter_cheer_up
 
 - rule: Say goodbye anytime the user says goodbye
   steps:
@@ -24,36 +32,7 @@ rules:
   - intent: bot_challenge
   - action: utter_iamabot
 
-# - rule: Ask the user to rephrase whenever they send a message with low NLU confidence
-#   steps:
-#     - intent: nlu_fallback
-#     - action: call_haystack
-
-- rule: Trigger feedbackloop
+- rule: Ask the user to rephrase whenever they send a message with low NLU confidence
   steps:
-  - intent: ask_feedback
-  - action: user_feedback_form
-  - active_loop: user_feedback_form
-
-- rule: Submit feedbackloop
-  condition: 
-  - active_loop: user_feedback_form
-  steps:
-  - action: user_feedback_form
-  - active_loop: null
-  - slot_was_set:
-    - requested_slot: null
-  - action: utter_submit
-  - action: utter_slots_values
-
-- rule: Interruption in feedback Form
-  condition:
-  # Condition that form is active.
-  - active_loop: user_feedback_form
-  steps:
-  # This unhappy path handles the case of an intent `bot_challenge`.
-  - intent: bot_challenge
-  - action: utter_iamabot
-  # Return to form after handling the `bot_challenge` intent
-  - action: user_feedback_form
-  - active_loop: user_feedback_form
+    - intent: nlu_fallback
+    - action: utter_rephrase

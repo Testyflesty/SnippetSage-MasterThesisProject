@@ -1,19 +1,5 @@
 version: "3.1"
 nlu:
-- intent: knowledge_question
-  examples: |
-    - Can you look this up: what is?
-    - Look this up: what is?
-    - Can you check: what is?
-    - please check: What is?
-    - Can you look this up: where is?
-    - Look this up: where is?
-    - Can you check: where is?
-    - please check: where is?
-    - I want to know how Fibonacci works
-    - What is an array?
-    - What is fibonacci?
-    
 - intent: ask_feedback
   examples: |
     - Can I give you feedback?
@@ -21,9 +7,91 @@ nlu:
     - Feedback
     - feedback
 
-- intent: got_question
+- intent: code_search
   examples: |
-    - What is the capital of germany?
+      - How is [TF](operation) calculated in [Sklearn](package)
+      - Can you help me find some code that does [X](query)?
+      - I need some help finding a code snippet that can [Y](query).
+      - Is there a code example that demonstrates [Z](query)?
+      - I need to see some [Java](language) code that writes to a file.
+      - How do I [sort an array](operation) in [JavaScript](proglanguage)?
+      - Show me some [React](proglanguage) code that uses [hooks](feature).
+      - [VTK UnstructuredGrid](data_structure) Offset coordinates 
+      - How to create [hierarchic labels](data_structure) in [matplotlib](package)
+      - [convert exponential to decimal](operation) in [python](proglanguage)
+      - [Matching abbreviated first names](operation) using regular expressions
+
+- intent: code_example
+  examples: |
+      - Can you provide me with a code snippet that shows how to [X](query)?
+      - Can you give me an example of [CSS](proglanguage) code that [centers](operation) text?
+      - Can you give me an example of [CSS](proglanguage) code that [centers](operation) text?
+      - Can you show me an example of [Python](proglanguage) code that reads a file?
+      - Can you give me an example of [CSS](proglanguage) code that [centers](operation) text?
+      - I'm looking for an example of how to [Y](query) in code.
+      - Could you show me how to [Z](query) using code?
+
+- intent: code_concept
+  examples: |
+      - I need help understanding the concept of [X](query) in code.
+      - Can you explain how [Y](query) works in code?
+      - I'm having trouble with [Z](query) in code, could you clarify it for me?
+
+- intent: relevance
+  examples: |
+      - This is [exactly what](rating) I was looking for!
+      - The search result is [not at all relevant](rating) to what I was searching for.
+      - This search result is [somewhat relevant](rating) to my query.
+
+- intent: code_understanding
+  examples: |
+      - I [completely understand](response) the code in this search result.
+      - I'm having a hard time understanding the code in this search result.
+      - The code in this search result is [mostly understandable](response) but some parts are confusing.
+
+- intent: code_usefulness
+  examples: |
+      - This code snippet is [incredibly useful](response) for my task.
+      - The code in this search result is [not useful](response) for my task.
+      - The code in this search result could be [somewhat useful](response) for my task.
+
+- intent: code_complexity
+  examples: |
+      - The code in this search result is [too complex](response) for me to understand.
+      - The code in this search result is [easy to understand](response).
+      - The code in this search result is [somewhat difficult](response) to understand.
+
+- intent: code_correctness
+  examples: |
+      - The code in this search result is [correct](response) and produces the desired output.
+      - The code in this search result is [incorrect](response) and does not produce the desired output.
+      - The code in this search result could be [partially correct](response) but needs modification.
+
+- intent: code_similarity
+  examples: |
+      - The code in this search result is [very similar](response) to what I was looking for.
+      - The code in this search result is [not similar](response) to what I was looking for.
+      - The code in this search result is [somewhat similar](response) to what I was looking for.
+
+- intent: code_novelty
+  examples: |
+      - The code in this search result is [new to me](response) and I haven't
+
+
+- intent: search_python_code
+  examples: |
+    - Can you find me some Python code for sorting a list?
+    - How do I read a CSV file in Python?
+    - I need a Python script to download a file from a URL.
+    - What's the best way to convert a string to a datetime object in Python?
+    
+- intent: evaluate_code_snippet
+  examples: |
+    - This code snippet is very helpful, thanks.
+    - I'm not sure how to use this code in my project.
+    - This code doesn't work for my use case.
+    - Can you explain how this code works?
+
 
 
 - intent: greet
@@ -90,6 +158,7 @@ nlu:
     - [It gives strange code](feedback_text)
     - [No](feedback_boolean)
     - I expect an array to be shorter
+
 - intent: bot_challenge
   examples: |
     - are you a bot?
@@ -97,3 +166,62 @@ nlu:
     - am I talking to a bot?
     - am I talking to a human?
 
+# - entity: proglanguage
+# - regex: proglanguage
+#   pattern: '(Python|Java|JavaScript|React|CSS|HTML|Ruby|PHP|C\+\+|C|SQL)'
+#   examples: |
+#     - Python
+#     - Java
+#     - JavaScript
+#     - React
+#     - CSS
+#     - HTML
+#     - Ruby
+#     - PHP
+#     - C++
+#     - C
+
+# - entity: data_structure
+# - regex: data_structure
+#   pattern: '(stack|queue|tree|graph|set|tuple|matrix|hash table|linked list|array|dictionary|dataframe|string|image)'
+#   examples: |
+#     - stack
+#     - queue
+#     - tree
+#     - graph
+#     - set
+#     - tuple
+#     - matrix
+#     - hash table
+#     - linked list
+#     - array
+#     - dictionary
+#     - dataframe
+#     - string
+#     - image
+
+# - entity: operation
+# - regex: operation
+#   pattern: '(parse|sort|filter|map|reduce|split|join|match|replace|sum|divide|loop)'
+#   examples: |
+#       - sort
+#       - filter
+#       - map
+#       - reduce
+#       - split
+#       - join
+#       - match
+#       - replace
+#       - Submit- divide
+#       - loop
+
+# - entity: package
+# - regex: package
+#   pattern: '(matplotlib|pandas|numpy|django|scipy|lmfit)'
+#   examples: |
+#       - matplotlib
+#       - pandas
+#       - numpy
+#       - django
+#       - scipy
+#       - lmfit

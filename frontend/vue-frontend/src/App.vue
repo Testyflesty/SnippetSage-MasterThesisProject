@@ -8,12 +8,14 @@
 <script>
 import Chat from "./components/ChatBot.vue";
 import BaseLineSearch from "./components/BaseLineSearch.vue"
+import Highlighter from 'vue-highlight-words'
 
 export default {
   name: "App",
   components: {
     Chat,
-    BaseLineSearch
+    BaseLineSearch,
+    Highlighter
   },
 };
 </script>

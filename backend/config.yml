@@ -5,27 +5,25 @@ recipe: default.v1
 language: en
 
 pipeline:
-# We keep the default rasa pipeline but just change the threshold for the fallback intent from 0.3 -> 0.8
-   - name: WhitespaceTokenizer
-   - name: RegexFeaturizer
-   - name: LexicalSyntacticFeaturizer
-   - name: CountVectorsFeaturizer
-   - name: CountVectorsFeaturizer
-     analyzer: char_wb
-     min_ngram: 1
-     max_ngram: 4
-   - name: DIETClassifier
-     epochs: 100
-     constrain_similarities: true
-   - name: EntitySynonymMapper
-   - name: ResponseSelector
-     epochs: 100
-     constrain_similarities: true
-   - name: FallbackClassifier
-     # This is the default
-     threshold: 0.8
-     ambiguity_threshold: 0.1
-
+  - name: WhitespaceTokenizer
+  - name: RegexFeaturizer
+  - name: LexicalSyntacticFeaturizer
+  - name: CountVectorsFeaturizer
+  - name: CountVectorsFeaturizer
+    analyzer: char_wb
+    min_ngram: 1
+    max_ngram: 4
+  - name: DIETClassifier
+    epochs: 100
+    constrain_similarities: true
+  - name: EntitySynonymMapper
+  - name: ResponseSelector
+    epochs: 100
+    constrain_similarities: true
+  - name: FallbackClassifier
+    # This is the default
+    threshold: 0.5
+    ambiguity_threshold: 0.1
 # Configuration for Rasa Core.
 # https://rasa.com/docs/rasa/core/policies/
 policies:

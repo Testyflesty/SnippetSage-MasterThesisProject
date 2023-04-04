@@ -1,0 +1,19 @@
+{"label":"PROGLANG","pattern":[{"LOWER":"golang"}]}
+{"label":"PROGLANG","pattern":[{"LOWER":"go", "POS": {"NOT_IN": "VERB"}}]}
+{"label":"PROGLANG","pattern":[{"LOWER":"sql"}]}
+{"label":"PROGLANG","pattern":[{"LOWER":"c#"}]}
+{"label":"PROGLANG","pattern":[{"LOWER":"c++"}]}
+{"label":"PROGLANG","pattern":[{"LOWER":"c"}]}
+{"label":"PROGLANG","pattern":[{"LOWER":"java"}]}
+{"label":"PROGLANG","pattern":[{"LOWER":"javascript"}]}
+{"label":"PROGLANG","pattern":[{"LOWER":"js"}]}
+{"label":"PROGLANG","pattern":[{"LOWER":"node"}]}
+{"label":"PROGLANG","pattern":[{"LOWER":"nodejs"}]}
+{"label":"PROGLANG","pattern":[{"LOWER":"php"}]}
+{"label":"PROGLANG","pattern":[{"LOWER":"python"}]}
+{"label":"PROGLANG","pattern":[{"LOWER":"ruby"}]}
+{"label":"PROGLANG","pattern":[{"LOWER":"swift"}]}
+{"label":"PROGLANG","pattern":[{"LOWER":{"REGEX":"(python\\d+\\.?\\d*.?\\d*)"}}]}
+{"label":"PROGLANG","pattern":[{"LOWER":"python"}, {"TEXT":{"REGEX":"(\\d+\\.?\\d*.?\\d*)"}}]}
+{"label":"PROGLANG","pattern":[{"LOWER": {"IN": ["node", "nodejs", "js", "javascript"]}}]}
+{"label":"PROGLANG","pattern":[{"LOWER": {"IN": ["node", "nodejs", "js", "javascript"]}}, {"TEXT": {"REGEX": "(\\d+\\.?\\d*.?\\d*)"}}]}

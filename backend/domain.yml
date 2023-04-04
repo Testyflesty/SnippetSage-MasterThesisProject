@@ -3,10 +3,13 @@ config:
   store_entities_as_slots: true
 session_config:
   session_expiration_time: 60
-  carry_over_slots_to_new_session: true
+  carry_over_slots_to_new_session: false
 entities:
-- feedback_boolean
-- feedback_text
+- operation
+- package
+- query
+- proglanguage
+- data_structure
 intents:
 - affirm:
     use_entities: true
@@ -32,23 +35,28 @@ intents:
     use_entities: true
 - nlu_fallback:
     use_entities: true
-slots:
-  feedback_boolean:
-    type: text
-    influence_conversation: true
-    mappings:
-    - type: from_entity
-      entity: feedback_boolean
-      conditions:
-      - active_loop: user_feedback_form
-  feedback_text:
-    type: text
-    influence_conversation: true
-    mappings:
-    - type: from_entity
-      entity: feedback_text
-      conditions:
-      - active_loop: user_feedback_form
+
+- code_search:
+    use_entities: true
+- code_example:
+    use_entities: true
+- code_concept:
+    use_entities: true
+- relevance:
+    use_entities: true
+- code_understanding:
+    use_entities: true
+- code_usefulness:
+    use_entities: true
+- code_complexity:
+    use_entities: true
+- code_correctness:
+    use_entities: true
+- code_similarity:
+    use_entities: true
+- code_novelty:
+    use_entities: true
+
 responses:
   utter_greet:
   - text: Hey! How are you?
@@ -74,24 +82,35 @@ responses:
   - text: Thank you very much for giving the following feedback! I will use it to improve my status from a Grey Wizard to a White Wizard
   utter_slots_values:
   - text: You provided me with the following feedback; {feedback_boolean} with {feedback_text}
+  utter_evaluate_code_snippet_helpful:
+  - text: "Glad to hear that this code was helpful!"
+
+  utter_evaluate_code_snippet_not_sure:
+  - text: "Let me know if you have any questions about how to use the code."
+
+  utter_evaluate_code_snippet_not_work:
+  - text: "I'm sorry to hear that this code didn't work for your use case."
+
+  utter_evaluate_code_snippet_explain:
+  - text: "Sure, here's how this code works:"
+
+  utter_rephrase:
+  - text: "I'm sorry I was unable to use intent modelling to classify your question to query the search engine. Could you please rephrase?"  
+
+  utter_give_feedback:
+  - text: "Which code snippet matched your input query best?"
+  buttons:
+    - title: "First"
+      payload: '/inform{{"feedback":"1"}}'
+    - title: "Second"
+      payload: '/inform{{"feedback":"2"}}'
+    - title: "Third"
+      payload: '/inform{{"feedback":"3"}}'
+
 actions:
 - call_haystack
 - utter_ask_user_feedback_form_feedback_boolean
 - utter_ask_user_feedback_form_feedback_text
 - utter_cheer_up
 - utter_did_that_help
-- call_GOT
-forms:
-  user_feedback_form:
-    ignored_intents:
-    - knowledge_question
-    - greet
-    - goodbye
-    - affirm
-    - deny
-    - mood_great
-    - mood_unhappy
-    - bot_challenge
-    required_slots:
-    - feedback_boolean
-    - feedback_text
+- utter_rephrase
