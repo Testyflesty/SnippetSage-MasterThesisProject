@@ -276,7 +276,7 @@ def casqoIndex():
     model_questions = AutoModel.from_pretrained('bert-base-uncased')
 
     
-    with open('./data.json', 'r') as f:
+    with open('./cosqa-retrieval-train-19604.json', 'r') as f:
             examples = []
             data = json.load(f)
             for js in data:
@@ -290,9 +290,9 @@ def casqoIndex():
     #         outputs = model_questions(**inputs)
     #     embedding = outputs.last_hidden_state.mean(dim=1).squeeze()
     #     body = {"question_id": element.idx, "question": ' '.join(element.nl_tokens), "question_emb": embedding.numpy()}
-    #     if es_client.exists(index="questions", id=element.idx):
-    #         print(f"Question {element.idx} already indexed, skipping")
-    #         continue
+    #     # if es_client.exists(index="questions", id=element.idx):
+    #     #     print(f"Question {element.idx} already indexed, skipping")
+    #     #     continue
 
     #     es_client.index(index='questions', id=element.idx, body=body)
 

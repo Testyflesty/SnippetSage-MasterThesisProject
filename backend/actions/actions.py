@@ -90,7 +90,7 @@ def searchstacq(query: str, es_client: Elasticsearch, model: str, index: str, to
         "field": "question_emb",
         "query_vector": combined_vector[0].tolist(),
         "k": 10,
-        "num_candidates": top_k
+        "num_candidates": 1000
         }
     }
     res = es_client.search(index=index, body=query_dict)

@@ -1,38 +1,22 @@
-import plotly.express as px
-from scipy.spatial import distance
-from elasticsearch.helpers import scan
-from sklearn.cluster import KMeans
-from gensim import corpora, models
-import numpy as np
-import matplotlib.pyplot as plt
-from tqdm import tqdm
-from elasticsearch import Elasticsearch
 import nltk
+from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
-from nltk.stem.wordnet import WordNetLemmatizer
-import re
-from sklearn.decomposition import LatentDirichletAllocation
-from sklearn.feature_extraction.text import CountVectorizer
+from collections import Counter
+import numpy as np
+from elasticsearch import Elasticsearch
+from tqdm import tqdm
 
-def preprocess_text(text):
-    text = re.sub(r'[^\w\s]', '', text).lower()
-
-    stop_words = set(stopwords.words('english'))
-    tokens = [token for token in text.split() if token not in stop_words]
-
-    lemmatizer = WordNetLemmatizer()
-    tokens = [lemmatizer.lemmatize(token) for token in tokens]
-
-    return tokens
+# Download the NLTK stopwords corpus
+nltk.download("stopwords")
 
 
 
 if __name__ == '__main__':
-
-    import plotly.express as px
-    from scipy.spatial import distance
-    from elasticsearch.helpers import scan
     
+    
+    from sklearn.cluster import KMeans
+    
+       
     es_client = Elasticsearch("https://localhost:9200", http_auth=("elastic", "jCJ2SMeF5mDqXMPlvs92"),  verify_certs=False)
     index_name = "questions"
     scroll_size = 1000
@@ -59,37 +43,35 @@ if __name__ == '__main__':
         embeddings = es_client.scroll(scroll_id=scroll_id, scroll="1m")
         hits = embeddings["hits"]["hits"]
 
-    
-        
 
     numpembedding = np.array([embedding for _, embedding in questions_and_embeddings]).reshape(-1, 1)
-    max_clusters = 10
 
-    optimal_num_clusters = 5 
-    kmeans = KMeans(n_clusters=optimal_num_clusters, random_state=0)
+
+    optimal_num_clusters = 10 
+    kmeans = KMeans(n_clusters=optimal_num_clusters, random_state=42)
     kmeans.fit(numpembedding)
 
-    num_topics = optimal_num_clusters
-    cluster_labels = kmeans.labels_
-    cluster_centers = kmeans.cluster_centers_
+    cluster_labels = kmeans.fit_predict(numpembedding)
+    # Define the stopword list
+    stopwords_list = stopwords.words("english")
 
-    num_topics = 5  
-    
-    lda = LatentDirichletAllocation(n_components=num_topics, random_state=0)
-
-    for cluster_id in range(optimal_num_clusters):
-        cluster_questions = [q for q, label in zip([q for q, _ in questions_and_embeddings], kmeans.labels_) if label == cluster_id]
+    questions = [hit["_source"]["question"] for hit in hits]
+    # For each cluster, extract the questions and tokenize them
+    for i in range(optimal_num_clusters):
+        cluster_questions = [q for q, label in zip(questions, cluster_labels) if label == i]
+        tokenized_questions = [word_tokenize(q.lower()) for q in cluster_questions]
         
-        preprocessed_questions = [preprocess_text(q) for q in cluster_questions]
+        # Flatten the tokenized questions and remove stopwords
+        flat_questions = [word for q in tokenized_questions for word in q if word not in stopwords_list]
         
-        vectorizer = CountVectorizer(stop_words='english')
-        bag_of_words = vectorizer.fit_transform([' '.join(q) for q in preprocessed_questions])
+        # Get the most frequent words and their counts
+        word_counts = Counter(flat_questions)
+        most_common_words = word_counts.most_common(10)
         
-        lda.fit(bag_of_words)
-        topics = lda.components_.argsort()[:, ::-1]
-        feature_names = np.array(vectorizer.get_feature_names())
-        top_words = [feature_names[topics[i, :5]].tolist() for i in range(num_topics)]
-        
-        print(f'Cluster {cluster_id + 1}:')
-        for i, (question, words) in enumerate(zip(cluster_questions, top_words)):
-            print(f'  {i+1}. {question} --> {" ".join(words)}')
+        # Print the most common words and examples for the cluster
+        print(f"Cluster {i}")
+        print("Most common words:", most_common_words)
+        print("Example questions:")
+        for q in cluster_questions[:5]:
+            print("- ", q)
+        print()

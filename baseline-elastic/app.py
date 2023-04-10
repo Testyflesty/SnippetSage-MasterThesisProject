@@ -31,15 +31,15 @@ def search():
             "knn":{
             "field": "question_emb",
             "query_vector": query_vector[0].tolist(),
-            "k": 3,
-            "num_candidates": 10
+            "k": 10,
+            "num_candidates": 1000
             },
             "fields":["question_id","question",
                             "question_emb"]
         }
         response = es_client.search(index='questions', body=query_dict)
         results = response["hits"]["hits"]
-        for id, hit in enumerate(response["hits"]["hits"][:3]):
+        for id, hit in enumerate(response["hits"]["hits"][:10]):
 
             search_result = es_client.search(index="code_snippets", q=f"question_id:{hit['_source']['question_id']}")
             for code_hit in search_result["hits"]["hits"]:
