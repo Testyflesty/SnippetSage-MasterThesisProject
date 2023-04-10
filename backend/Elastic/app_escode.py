@@ -238,7 +238,7 @@ def stacqIndex():
         "mappings": {
             "properties": {
                 "question_id": {"type": "integer"},
-                "question_text": {"type": "text"},
+                "question": {"type": "text"},
                 "question_emb": {"type": "dense_vector", "dims": 768, "index": True,
                 "similarity": "cosine"},      
                 }

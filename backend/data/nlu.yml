@@ -20,22 +20,63 @@ nlu:
       - How to create [hierarchic labels](data_structure) in [matplotlib](package)
       - [convert exponential to decimal](operation) in [python](proglanguage)
       - [Matching abbreviated first names](operation) using regular expressions
+      - How can I implement [binary search](algorithm) in [Python](proglanguage)?
+      - Can someone show me a code snippet that [extracts text](query) from a PDF using [Python](proglanguage)?
+      - Is there a [Python](proglanguage) library that can [convert HTML to Markdown](query)?
+      - How can I [calculate the mean](operation) of a [Pandas DataFrame](data_structure) column in [Python](proglanguage)?
+      - Show me some code that [scrapes data](query) from a website using [BeautifulSoup](package) in [Python](proglanguage).
+      - How can I [split a string](operation) into a list of words in [Python](proglanguage)?
+      - Is there a [Python](proglanguage) package that can [generate QR codes](query)?
+      - Can someone provide an example of [using generators](feature) in [Python](proglanguage)?
+      - How can I [resize an image](operation) using [Pillow](package) in [Python](proglanguage)?
+      - Show me some code that [plots a histogram](query) using [Matplotlib](package) in [Python](proglanguage).
+      - Is there a [Python](proglanguage) library that can [generate random numbers](query)?
+      - Can someone provide an example of [using decorators](feature) in [Python](proglanguage)?
+      - How can I [convert a string to a datetime object](operation) in [Python](proglanguage)?
+      - Show me some code that [reads from a CSV file](query) using [Pandas](package) in [Python](proglanguage).
+      - Is there a [Python](proglanguage) library that can [perform sentiment analysis](query) on text data?
+      - Can someone provide an example of [using context managers](feature) in [Python](proglanguage)?
+      - How can I [perform text classification](operation) using [scikit-learn](package) in [Python](proglanguage)?
+      - Show me some code that [trains a neural network](query) using [TensorFlow](package) in [Python](proglanguage).
+      - Is there a [Python](proglanguage) library that can [generate bar charts](query) using [Matplotlib](package)?
+      - Can someone provide an example of [using the map function](feature) in [Python](proglanguage)?
 
 - intent: code_example
   examples: |
       - Can you provide me with a code snippet that shows how to [X](query)?
       - Can you give me an example of [CSS](proglanguage) code that [centers](operation) text?
-      - Can you give me an example of [CSS](proglanguage) code that [centers](operation) text?
+      - Can you give me an example of an [XML](proglanguage) file that [shows](operation) data?
       - Can you show me an example of [Python](proglanguage) code that reads a file?
-      - Can you give me an example of [CSS](proglanguage) code that [centers](operation) text?
       - I'm looking for an example of how to [Y](query) in code.
       - Could you show me how to [Z](query) using code?
+      - How do I [add elements to a list](operation) in [Java](proglanguage)?
+      - Is there a [Python](proglanguage) library that can [convert a PDF to an image](query)?
+      - Can someone provide an example of [using lambda functions](feature) in [JavaScript](proglanguage)?
+      - How can I [filter data](operation) in a [MongoDB](data_structure) collection using [Python](proglanguage)?
+      - Show me some code that [implements the quicksort algorithm](query) in [C++](proglanguage).
+      - Can someone provide an example of [using closures](feature) in [Python](proglanguage)?
+      - How can I [resize an image](operation) using [OpenCV](package) in [Python](proglanguage)?
+      - Is there a [Java](proglanguage) library that can [convert Excel to PDF](query)?
+      - Can someone show me an example of [using CSS grid](feature) to create a responsive layout?
+      - How do I [transpose a matrix](operation) in [NumPy](package) using [Python](proglanguage)?
+
 
 - intent: code_concept
   examples: |
       - I need help understanding the concept of [X](query) in code.
       - Can you explain how [Y](query) works in code?
       - I'm having trouble with [Z](query) in code, could you clarify it for me?
+      - Can you explain the concept of [recursion](query) in code?
+      - How does [polymorphism](query) work in object-oriented programming?
+      - What is [exception handling](query) and how does it work in [Java](proglanguage)?
+      - Can you explain the difference between [stack memory](data_structure) and [heap memory](data_structure) in [C++](proglanguage)?
+      - What is [memoization](query) and how is it used in [dynamic programming](query)?
+      - How does [inheritance](query) work in [Python](proglanguage)?
+      - Can you explain the concept of [anonymous functions](query) in [JavaScript](proglanguage)?
+      - What is [garbage collection](query) and how does it work in [Java](proglanguage)?
+      - How do [pointers](data_structure) work in [C](proglanguage)?
+      - Can you explain the concept of [multithreading](query) in [Python](proglanguage)?
+
 
 - intent: relevance
   examples: |
@@ -77,14 +118,6 @@ nlu:
   examples: |
       - The code in this search result is [new to me](response) and I haven't
 
-
-- intent: search_python_code
-  examples: |
-    - Can you find me some Python code for sorting a list?
-    - How do I read a CSV file in Python?
-    - I need a Python script to download a file from a URL.
-    - What's the best way to convert a string to a datetime object in Python?
-    
 - intent: evaluate_code_snippet
   examples: |
     - This code snippet is very helpful, thanks.
@@ -132,32 +165,7 @@ nlu:
     - that sounds good
     - correct
     - Yes
-- intent: give_feedback
-  examples: |
-    - [no](feedback_boolean)
-    - [n](feedback_boolean)
-    - never
-    - I don't think so
-    - don't like that
-    - no way
-    - not really
-    - [perfect](feedback_boolean)
-    - great
-    - amazing
-    - wonderful
-    - extremely good
-    - so so perfect
-    - so good
-    - so perfect
-    - [not good](feedback_boolean)
-    - not very good
-    - extremly sad
-    - [No](feedback_boolean)
-    - [I prefer it if you do it like](feedback_text)
-    - [Next time use this instead of that](feedback_text)
-    - [It gives strange code](feedback_text)
-    - [No](feedback_boolean)
-    - I expect an array to be shorter
+
 
 - intent: bot_challenge
   examples: |

@@ -13,6 +13,7 @@ from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
 import requests
 import json
+import numpy as np
 
 
 class ActionElastic(Action):
@@ -45,15 +46,50 @@ class ActionElastic(Action):
 
         return []
     
-def searchstacq(query: str, es_client: Elasticsearch, model: str, index: str, top_k: int = 10, metadata: dict = {}):
+def searchstacq(query: str, es_client: Elasticsearch, model: str, index: str, top_k: int = 40, metadata: dict = {}):
 
     encoder = Encoder(model)
-    query_vector = encoder.encode(query, max_length=64)
+    query_vector = encoder.encode(query, max_length=768)
+
+    intent = metadata.get("intent")
+    if intent:
+        intent_vector = encoder.encode(intent, max_length=768)
+    else:
+        intent_vector = None
+
+    entities = metadata.get("entities", [])
+    entity_vectors = []
+    for entity in entities:
+        entity_vector = encoder.encode(entity["value"], max_length=768)
+        entity_vectors.append(entity_vector)
+        print("entity_vector")
+    if entity_vectors:
+        entity_vectors = np.mean(entity_vectors, axis=0)
+    else:
+        entity_vectors = None
+
+    if intent_vector is not None and entity_vectors is not None:
+        combined_vector = 0.6 * query_vector[0] + 0.1 * intent_vector + 0.3 * entity_vectors
+        print("both intend and entity")
+
+    if(intent_vector is not None and entity_vectors is None):
+        combined_vector = 0.7 * query_vector[0] + 0.3 * intent_vector
+        print("only intent")
+
+    if(intent_vector is None and entity_vectors is not None):
+        combined_vector = 0.7 * query_vector[0] + 0.3 * entity_vectors
+        print("only entity")
+
+    if(combined_vector is None):
+        combined_vector = query_vector[0]
+        print("else only query")
+
+    
     query_dict = {
         "knn":{
         "field": "question_emb",
-        "query_vector": query_vector[0].tolist(),
-        "k": 3,
+        "query_vector": combined_vector[0].tolist(),
+        "k": 10,
         "num_candidates": top_k
         }
     }
@@ -130,7 +166,7 @@ def search(query: str, es_client: Elasticsearch, model: str, index: str, top_k: 
     # repo = best_doc['_source']['repo']
     # score = best_doc['_score']
     
-    resultstring = "I found the following 3 code snippets for you: <br/>"
+    resultstring = "I found the following code snippets for you: <br/>"
 
     for index, hit in enumerate(res["hits"]["hits"]):
 

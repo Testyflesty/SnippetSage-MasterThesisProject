@@ -15,13 +15,9 @@ intents:
     use_entities: true
 - got_question:
     use_entities: true
-- ask_feedback:
-    use_entities: true
 - bot_challenge:
     use_entities: true
 - deny:
-    use_entities: true
-- give_feedback:
     use_entities: true
 - goodbye:
     use_entities: true
@@ -99,13 +95,13 @@ responses:
 
   utter_give_feedback:
   - text: "Which code snippet matched your input query best?"
-  buttons:
-    - title: "First"
-      payload: '/inform{{"feedback":"1"}}'
-    - title: "Second"
-      payload: '/inform{{"feedback":"2"}}'
-    - title: "Third"
-      payload: '/inform{{"feedback":"3"}}'
+    buttons:
+      - title: "First"
+        payload: '/inform{{"feedback":"1"}}'
+      - title: "Second"
+        payload: '/inform{{"feedback":"2"}}'
+      - title: "Third"
+        payload: '/inform{{"feedback":"3"}}'
 
 actions:
 - call_haystack

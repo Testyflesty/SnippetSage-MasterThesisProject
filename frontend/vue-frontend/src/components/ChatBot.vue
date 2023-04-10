@@ -204,6 +204,9 @@ export default {
 };
 </script>
 <style>
+.my-2:last-child {
+  margin-bottom: 0;
+}
 .line-number {
   display: inline-block;
   width: 2em;

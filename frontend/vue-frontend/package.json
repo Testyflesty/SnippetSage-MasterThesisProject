@@ -19,7 +19,8 @@
     "util": "^0.12.5",
     "vue": "^3.2.47",
     "vue-autosuggest": "^2.2.0",
-    "vue-highlight-words": "^3.0.1"
+    "vue-highlight-words": "^3.0.1",
+    "vue2-text-annotation": "^0.0.8"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.1.0",
