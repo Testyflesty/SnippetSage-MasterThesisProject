@@ -76,7 +76,30 @@ nlu:
       - What is [garbage collection](query) and how does it work in [Java](proglanguage)?
       - How do [pointers](data_structure) work in [C](proglanguage)?
       - Can you explain the concept of [multithreading](query) in [Python](proglanguage)?
-
+      - What is the idea behind [fibonacci](query) algorithm?
+      - [convert](operation) [int](data_structure) to [string](data_structure)
+      - priority [queue](operation)
+      - [string](data_structure) to [date](data_structure)
+      - [sort](operation) [string](data_structure) [list](data_structure)
+      - [save](operation) [list](data_structure) to [file](data_structure)
+      - [postgresql](query) [connection](operation)
+      - confusion matrix
+      - [set](operation) [working directory](query)
+      - [group](operation) [by count](query)
+      - binomial distribution
+      - aes encryption
+      - [linear regression](query)
+      - socket recv timeout
+      - write [csv](data_structure)
+      - [convert](operation) [decimal](data_structure) to [hex](data_structure)
+      - [export](operation) to excel
+      - scatter plot
+      - [convert](operation) [json](data_structure) to [csv](data_structure)
+      - [pretty print](operation) [json](data_structure)
+      - [replace](operation) in [file](data_structure)
+      - [k means clustering](query)
+      - [connect](operation) to [sql](proglanguage)
+      - [html](proglanguage) [encode](operation) [string](data_structure)
 
 - intent: relevance
   examples: |

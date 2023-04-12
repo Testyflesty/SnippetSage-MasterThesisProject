@@ -26,12 +26,12 @@ action_endpoint:
 #    use_ssl: <whether or not the communication is encrypted, default false>
 
 
-# tracker_store:
-#     type: mongod
-#     url: mongodb+srv://snippetsage.ocqr4xg.mongodb.net
-#     db: rasa
-#     username: Testyflesty
-#     password: zFAKhF22HC4zsWik
+tracker_store:
+    type: mongod
+    url: mongodb+srv://snippetsage.ocqr4xg.mongodb.net
+    db: rasa
+    username: Testyflesty
+    password: zFAKhF22HC4zsWik
 #tracker_store:
 #    type: mongod
 #    url: <url to your mongo instance, e.g. mongodb://localhost:27017>

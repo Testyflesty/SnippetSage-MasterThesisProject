@@ -6,21 +6,17 @@ rules:
   steps:
   - intent: code_search
   - action: call_haystack
-  - action: utter_cheer_up
 
 
 - rule: Query elasticsearch with intent and entity recognition
   steps:
   - intent: code_example
   - action: call_haystack
-  - action: utter_cheer_up
-
 
 - rule: Query elasticsearch with intent and entity recognition
   steps:
   - intent: code_concept
   - action: call_haystack
-  - action: utter_cheer_up
 
 - rule: Say goodbye anytime the user says goodbye
   steps:

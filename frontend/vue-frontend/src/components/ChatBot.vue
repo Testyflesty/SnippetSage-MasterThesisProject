@@ -27,12 +27,14 @@
               class="w-8 h-8 rounded-full ml-2"
             />
             <div class="bg-blue-500 text-white rounded-lg p-2">
-              <Highlighter class="my-highlight" 
+              <!-- <Highlighter class="my-highlight" 
                   highlightClassName="highlight"
                   :searchWords="entities"
                   :autoEscape="true"
-                  :textToHighlight="message.text"/>
-            </div>
+                  :textToHighlight="message.text"/> -->
+                  <p v-if="message.highlightedText === ''">{{ message.text }}</p>
+                  <p v-else v-html="message.highlightedText"></p>
+                </div>
           </div>
         </div>
         <div v-if="botIsTyping" class="flex flex-row items-start mb-2">
@@ -77,7 +79,7 @@ export default {
   },
   data() {
     return {
-      messages: [{id: 0, text:"Hello there, my name is Snippetsage, I can help you find code snippets. What are you looking for?", isBot: true}],
+      messages: [{id: 0, text:"Hello there, my name is Snippetsage, I can help you find code snippets. What are you looking for?", isBot: true, highlightedText:""}],
       userMessage: "",
       botIsTyping: false,
       recentSearches: [],
@@ -92,8 +94,28 @@ export default {
   computed: {
     entities() {
       return Object.keys(this.namedentities);
+    },
+    entityvalues() {
+      return Object.values(this.namedentities);
     }
+
   },
+  watch: {
+  messages: {
+    handler: function (newVal, oldVal) {
+      for (let i = oldVal.length; i < newVal.length; i++) {
+        const message = newVal[i];
+        if (!message.isBot && this.namedentities) {
+          console.log("highlighting")
+          message.highlightedText = this.highlightEntities(
+            message.text,
+          );
+        }
+      }
+    },
+    deep: true,
+  },
+},
   methods: {isJson(str) {
     try {
         JSON.parse(str);
@@ -102,33 +124,39 @@ export default {
     }
     return true;
 },
+highlightEntities(text) {
+      const regex = new RegExp(Object.keys(this.namedentities).join('|'), 'gi');
+      return text.replace(regex, match => {
+        const entity = this.namedentities[match];
+        return `<span class="entity-${entity}">${match}<span class="label">[${entity}]</span></span>`;
+      });
+    },
+
 
     async sendMessage() {
     this.botIsTyping = true;
-    this.messages.push({ id: 0, text: this.userMessage, isBot: false });
+    this.messages.push({ id: 0, text: this.userMessage, isBot: false , highlightedText:""});
     
     try{
       const response = await axios.post("http://localhost:5005/webhooks/rest/webhook", {
       message: this.userMessage,
     });
+
+
+
     console.log(response.data[0])
-    const responseData = JSON.parse(response.data[0].text)
+    let responseData = null;
+    try{
+      responseData = JSON.parse(response.data[0].text)
+    } catch{
+      responseData = null;
+    }
+
+    if(responseData != null){
     const results = responseData.results
 
     const intent = responseData.intent
     const entities = responseData.entities
-
-
-    // loop through the results array to get the questions and code snippets
-    for (let i = 0; i < results.length; i++) {
-      const question = results[i]._source.question
-      const codeSnippet = results[i]._source.code
-      const score = results[i]._score
-
-      this.messages.push({ id: 0, text: "Question: " + question + " with a score of " + score, isBot: true });
-      this.messages.push({ id: 0, text: codeSnippet, isBot: true });
-
-    }
 
     for (let i = 0; i < entities.length; i++) {
       const entity = entities[i].entity;
@@ -137,52 +165,38 @@ export default {
 
     }
 
+    const messageToUpdate = this.messages.find((message) => message.text === this.userMessage);
+    console.log(messageToUpdate)
+    if (messageToUpdate) {
+      messageToUpdate.highlightedText = this.highlightEntities(messageToUpdate.text);
+    }
+
+    
+    // loop through the results array to get the questions and code snippets
+    for (let i = 0; i < results.length; i++) {
+      const question = results[i]._source.question
+      const codeSnippet = results[i]._source.code
+      const score = results[i]._score
+
+      this.messages.push({ id: i, text: "Question: " + question + " with a score of " + score, isBot: true , highlightedText:""});
+      this.messages.push({ id: i, text: codeSnippet, isBot: true ,highlightedText:""});
+
+    }
+
+
+
     const keyValuePairs = Object.entries(this.namedentities).map(([key, value]) => `${key}: ${value}`).join(', ');
 
     this.messages.push({ id: 0, text: "I classified your question with the following intent: " + intent + " And found these entities: " + keyValuePairs, isBot: true });
 
-
+      } else {
+        this.messages.push({ id: 0, text: response.data[0].text, isBot: true });
+      }
           } catch (error) {
         console.log(error);
       }
-
-
-
-  // try{
-  // const response = await axios.post("http://localhost:5005/webhooks/rest/webhook", {
-  //   message: this.userMessage,
-  // });
-  
-  // this.jsonResponse1 = response.data[0];
-  // this.jsonResponse2 = response.data[1];
-  // this.messages.push({ id: 0, text: "I found the following questions that are semantically close to your question!", isBot: true });
-
-  // console.log(response)
-  // console.log(this.jsonResponse1)
-  // if(this.jsonResponse1.text == "I'm sorry I was unable to use intent modelling to classify your question to query the search engine. Could you please rephrase?"){
-  //   this.messages.push({ id: 0, text: this.jsonResponse1.text, isBot: true });
-  // } else{
-  //   if (Array.isArray(JSON.parse(this.jsonResponse1.text))) {
-  //       console.log(JSON.parse(this.jsonResponse1.text));
-  //       let answer = JSON.parse(this.jsonResponse1.text)
-  //       answer.forEach(element => {
-  //         this.messages.push({ id: 0, text: "Question: " + element._source.question + " with a score of " + element._score, isBot: true });
-  //         this.messages.push({ id: 0, text: element._source.code, isBot: true });
-
-  //       });
-          
-  //         } else {
-  //         if (typeof this.jsonResponse1.text === "string") {
-  //           this.singleTextValue = this.jsonResponse1.text;
-  //         }  
-  //         else if (typeof this.jsonResponse2.text === "string") {
-  //           this.singleTextValue = this.jsonResponse2.text;
-  //         }
-  //       }
-  //     }
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
+    
+  this.namedentities = {};
   this.userMessage = "";
   this.botIsTyping = false;
     }
@@ -233,5 +247,71 @@ code {
   display: block;
   padding: 1em;
 }
+
+.label {
+  font-size: 0.8em;
+  margin-left: 0.2em;
+  opacity: 0.5;
+  color: #1a202c;
+}
+
+.entities {
+    line-height: 2;
+}
+.entity-proglanguage {
+  position: relative;
+  display: inline-block;
+  padding: 0.1em 0.5em;
+  border-radius: 0.5em;
+  background-color: #fff5eb;
+  color: #dd6b20;
+}
+
+.entity-query {
+  position: relative;
+  display: inline-block;
+  padding: 0.1em 0.5em;
+  border-radius: 0.5em;
+  background-color: #fff5eb;
+  color: #9538a1;
+}
+
+.entity-data_structure {
+  position: relative;
+  display: inline-block;
+  padding: 0.1em 0.5em;
+  border-radius: 0.5em;
+  background-color: #eaf2f8;
+  color: #1a202c;
+}
+
+.entity-operation {
+  position: relative;
+  display: inline-block;
+  padding: 0.1em 0.5em;
+  border-radius: 0.5em;
+  background-color: #f0fff4;
+  color: #38a169;
+}
+
+
+.entity-package {
+  position: relative;
+  display: inline-block;
+  padding: 0.1em 0.5em;
+  border-radius: 0.5em;
+  background-color: #ebf8ff;
+  color: #3182ce;
+}
+
+.entity-response {
+  position: relative;
+  display: inline-block;
+  padding: 0.1em 0.5em;
+  border-radius: 0.5em;
+  background-color: #fff5eb;
+  color: #FFB8D1;
+}
+
 
 </style>
