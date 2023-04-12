@@ -14,6 +14,25 @@
                 <pre>
                 <code v-html="highlightCode(message.text)"></code>
               </pre>
+              <div class="flex justify-between items-center mt-2">
+                <button
+                :class="{ 'text-green-500': liked[message.text] }"
+                class="mr-1"
+                @click="toggleLiked(message.text)"
+              >
+                <i class="far fa-thumbs-up"></i>
+              </button>
+              <button
+                :class="{ 'text-red-500': disliked[message.text] }"
+                class="mr-1"
+                @click="toggleDisliked(message.text)"
+              >
+                <i class="far fa-thumbs-down"></i>
+              </button>
+                <button @click="thumbsUp(message.text)">👍</button>
+                <button @click="thumbsDown(message.text)">👎</button>
+              </div>
+              
             </div>
               <div v-else>
                 {{ message.text }}
@@ -59,7 +78,21 @@
         </button>
       </form>
     </div>
+    <div class="bg-gray-800 w-1/4 h-screen">
+  <h1 class="text-white font-bold text-xl p-4">Your Searches</h1>
+  <div class="px-4">
+    <div v-for="(message, index) in usermessages" :key="index" class="py-2 border-b border-gray-700">
+      <p class="text-gray-400 mb-1">Message {{ index + 1 }} - Intent: {{ message.intent }}</p>
+      <div class="bg-blue-500 text-white rounded-lg p-2">
+        <p v-if="message.highlightedText === ''">{{ message.text }}</p>
+        <p v-else v-html="message.highlightedText"></p>
+      </div>
+    </div>
   </div>
+</div>
+</div>
+
+
 </template>
 
 
@@ -79,7 +112,7 @@ export default {
   },
   data() {
     return {
-      messages: [{id: 0, text:"Hello there, my name is Snippetsage, I can help you find code snippets. What are you looking for?", isBot: true, highlightedText:""}],
+      messages: [{id: 0, text:"Hello there, my name is Snippetsage, I can help you find code snippets. What are you looking for?", isBot: true, highlightedText:"", intent: ""}],
       userMessage: "",
       botIsTyping: false,
       recentSearches: [],
@@ -89,6 +122,10 @@ export default {
       textValues: [],
       singleTextValue: "",
       namedentities: {},
+      formatter: new Intl.NumberFormat('en-US', {
+      style: 'percent',
+      minimumFractionDigits: 2,
+    })
     };
   },
   computed: {
@@ -97,7 +134,10 @@ export default {
     },
     entityvalues() {
       return Object.values(this.namedentities);
-    }
+    },
+    usermessages() {
+      return this.messages.filter(message => !message.isBot);
+    },
 
   },
   watch: {
@@ -124,6 +164,23 @@ export default {
     }
     return true;
 },
+thumbsUp(text) {
+    this.sendFeedback(text, "thumbs_up");
+  },
+  thumbsDown(text) {
+    this.sendFeedback(text, "thumbs_down");
+  },
+  async sendFeedback(text, feedbackType) {
+    try {
+      const response = await axios.post("/api/feedback", {
+        text: text,
+        feedback_type: feedbackType
+      });
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+    }
+  },
 highlightEntities(text) {
       const regex = new RegExp(Object.keys(this.namedentities).join('|'), 'gi');
       return text.replace(regex, match => {
@@ -165,10 +222,11 @@ highlightEntities(text) {
 
     }
 
-    const messageToUpdate = this.messages.find((message) => message.text === this.userMessage);
+    const messageToUpdate = this.messages[this.messages.length - 1];
     console.log(messageToUpdate)
     if (messageToUpdate) {
       messageToUpdate.highlightedText = this.highlightEntities(messageToUpdate.text);
+      messageToUpdate.intent = intent;
     }
 
     
@@ -176,7 +234,7 @@ highlightEntities(text) {
     for (let i = 0; i < results.length; i++) {
       const question = results[i]._source.question
       const codeSnippet = results[i]._source.code
-      const score = results[i]._score
+      const score = this.formatter.format(results[i]._score)
 
       this.messages.push({ id: i, text: "Question: " + question + " with a score of " + score, isBot: true , highlightedText:""});
       this.messages.push({ id: i, text: codeSnippet, isBot: true ,highlightedText:""});
