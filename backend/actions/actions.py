@@ -14,6 +14,7 @@ from rasa_sdk.executor import CollectingDispatcher
 import requests
 import json
 import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 class ActionElastic(Action):
@@ -49,6 +50,7 @@ class ActionElastic(Action):
 def searchstacq(query: str, es_client: Elasticsearch, model: str, index: str, top_k: int = 40, metadata: dict = {}):
 
     encoder = Encoder(model)
+    code_encoder = Encoder('hamzab/codebert_code_search')
     query_vector = encoder.encode(query, max_length=768)
 
     intent = metadata.get("intent")
@@ -85,32 +87,98 @@ def searchstacq(query: str, es_client: Elasticsearch, model: str, index: str, to
         print("else only query")
 
     
-    query_dict = {
-        "knn":{
+    question_query_dict = {
+        "knn": {
         "field": "question_emb",
         "query_vector": combined_vector[0].tolist(),
-        "k": 10,
-        "num_candidates": 1000
+        "k": 100,
+        "num_candidates": 1000,
         }
+        
     }
-    res = es_client.search(index=index, body=query_dict)
+    res = es_client.search(index=index, body=question_query_dict)
     results = res["hits"]["hits"]
-
-    for id, hit in enumerate(res["hits"]["hits"]):
-        search_result = es_client.search(index="code_snippets", q=f"question_id:{hit['_source']['question_id']}")
-        hit["_source"].pop("question_emb", None)
-        for code_hit in search_result["hits"]["hits"]:
-
-            code = '```' + code_hit['_source']['code_snippet'] + '```'
-            hit['_source']['code'] = code
     
+    code_vector = code_encoder.encode(query, max_length=768)
+    code_query_dict = {
+        "knn": {
+        "field": "code_emb",
+        "query_vector": code_vector[0].tolist(),
+        "k": 100,
+        "num_candidates": 1000,
+        }
+        
+    }
     
+    code_res = es_client.search(index='code_snippets', body=code_query_dict)
+    code_results = code_res["hits"]["hits"]
+    hits = 0
+
+    combined_results = []
+    for question in results:
+        print('check question')
+        text_score = question["_score"]
+        question_id = question["_source"]["question_id"]
+        for code_hit in code_results:
+            if code_hit["_source"]["question_id"] == question_id:
+                print('found match')
+
+                code_score = code_hit["_score"]
+                combined_score = 0.5 * text_score + 0.5 * code_score
+                combined_hit = {
+                    "_score": combined_score,
+                    "_source": {
+                        "question": question["_source"]["question"],
+                        "code": code_hit["_source"]["code_snippet"]
+                    }
+                }
+                print(combined_hit)
+                combined_results.append(combined_hit)
+
+    combined_results.sort(key=lambda x: x["_score"], reverse=True)   
+    top_results = combined_results[:10]
+    
+    # for id, hit in enumerate(res["hits"]["hits"]):
+    #     search_result = es_client.search(index="code_snippets", q=f"question_id:{hit['_source']['question_id']}")
+    #     hit["_source"].pop("question_emb", None)
+    #     for code_hit in search_result["hits"]["hits"]:
+    #         if hits < 10:
+    #             for codebert_hit in code_results:
+    #                 if cosine_similarity([code_hit['_source']['code_emb']], [codebert_hit['_source']['code_emb']])[0][0] > 0.80:
+    #                     code = '```' + code_hit['_source']['code_snippet'] + '```'
+    #                     results[id]['_source']['code'] = code
+    #                     hits += 1
+                        
     response = {
-        "results": results,
+        "results": top_results,
         "intent": metadata["intent"],
         "entities": metadata["entities"]
     }
     return response
+    # for id, hit in enumerate(res["hits"]["hits"]):
+    #     search_result = es_client.search(index="code_snippets", q=f"question_id:{hit['_source']['question_id']}")
+    #     hit["_source"].pop("question_emb", None)
+    #     for code_hit in search_result["hits"]["hits"]:
+    #         if hits < 10:
+    #             for codebert_hit in code_results:
+    #                 print('codebert baby')
+    #                 if cosine_similarity([code_hit['_source']['code_emb']], [codebert_hit['_source']['code_emb']])[0][0] > 0.95:
+    #                     print("codebert hit")
+    #                     code = '```' + code_hit['_source']['code_snippet'] + '```'
+    #                     print (code)
+    #                     hit['_source']['code'] = code
+    #                     hits += 1
+    
+    
+    # response = {
+    #     "results": results,
+    #     "intent": metadata["intent"],
+    #     "entities": metadata["entities"]
+    # }
+    
+    
+    
+    # return response
     
 def search(query: str, es_client: Elasticsearch, model: str, index: str, top_k: int = 10):
 

@@ -248,7 +248,8 @@ def casqoIndex():
                 "question_id": {"type": "integer"},
                 "question": {"type": "text"},
                 "question_emb": {"type": "dense_vector", "dims": 768, "index": True,
-                "similarity": "cosine"},      
+                "similarity": "cosine"},   
+                   
                 }
         }
     }
@@ -282,19 +283,19 @@ def casqoIndex():
             for js in data:
                 examples.append(convert_examples_to_features(js, tokenizer))
 
-    # # Convert text and code snippets to embeddings
-    # for element in tqdm(examples):
-    #     element.idx = int(element.idx.split('-')[2])
-    #     inputs = tokenizer_questions(' '.join(element.nl_tokens), return_tensors="pt", padding=True, truncation=True)
-    #     with torch.no_grad():
-    #         outputs = model_questions(**inputs)
-    #     embedding = outputs.last_hidden_state.mean(dim=1).squeeze()
-    #     body = {"question_id": element.idx, "question": ' '.join(element.nl_tokens), "question_emb": embedding.numpy()}
-    #     # if es_client.exists(index="questions", id=element.idx):
-    #     #     print(f"Question {element.idx} already indexed, skipping")
-    #     #     continue
+    # Convert text and code snippets to embeddings
+    for element in tqdm(examples):
+        element.idx = int(element.idx.split('-')[2])
+        inputs = tokenizer_questions(' '.join(element.nl_tokens), return_tensors="pt", padding=True, truncation=True)
+        with torch.no_grad():
+            outputs = model_questions(**inputs)
+        embedding = outputs.last_hidden_state.mean(dim=1).squeeze()
+        body = {"question_id": element.idx, "question": ' '.join(element.nl_tokens), "question_emb": embedding.numpy()}
+        # if es_client.exists(index="questions", id=element.idx):
+        #     print(f"Question {element.idx} already indexed, skipping")
+        #     continue
 
-    #     es_client.index(index='questions', id=element.idx, body=body)
+        es_client.index(index='questions', id=element.idx, body=body)
 
     for element in tqdm(examples):
         element.idx = int(element.idx.split('-')[2])
