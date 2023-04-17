@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@elastic/elasticsearch": "8.6",
+    "@headlessui/vue": "^1.7.13",
+    "@heroicons/vue": "^2.0.17",
     "axios": "^1.3.4",
     "displacy": "^1.1.0",
     "displacy-ent": "^1.0.2",

@@ -88,19 +88,22 @@ def searchstacq(query: str, es_client: Elasticsearch, model: str, index: str, to
 
     
     question_query_dict = {
+        "size": 100,
         "knn": {
         "field": "question_emb",
         "query_vector": combined_vector[0].tolist(),
         "k": 100,
         "num_candidates": 1000,
         }
-        
-    }
+        }
+    
     res = es_client.search(index=index, body=question_query_dict)
     results = res["hits"]["hits"]
     
     code_vector = code_encoder.encode(query, max_length=768)
     code_query_dict = {
+        "size": 10,
+    
         "knn": {
         "field": "code_emb",
         "query_vector": code_vector[0].tolist(),
@@ -112,45 +115,57 @@ def searchstacq(query: str, es_client: Elasticsearch, model: str, index: str, to
     
     code_res = es_client.search(index='code_snippets', body=code_query_dict)
     code_results = code_res["hits"]["hits"]
-    hits = 0
+    # hits = 0
+    
+    #Combined Search:
 
-    combined_results = []
-    for question in results:
-        print('check question')
-        text_score = question["_score"]
-        question_id = question["_source"]["question_id"]
-        for code_hit in code_results:
-            if code_hit["_source"]["question_id"] == question_id:
-                print('found match')
+    # combined_results = []
+    # for question in results:
+    #     print('check question')
+    #     text_score = question["_score"]
+    #     question_id = question["_source"]["question_id"]
+    #     for code_hit in code_results:
+    #         if code_hit["_source"]["question_id"] == question_id:
+    #             print('found match')
 
-                code_score = code_hit["_score"]
-                combined_score = 0.5 * text_score + 0.5 * code_score
-                combined_hit = {
-                    "_score": combined_score,
-                    "_source": {
-                        "question": question["_source"]["question"],
-                        "code": code_hit["_source"]["code_snippet"]
-                    }
-                }
-                print(combined_hit)
-                combined_results.append(combined_hit)
+    #             code_score = code_hit["_score"]
+    #             combined_score = 0.5 * text_score + 0.5 * code_score
+    #             combined_hit = {
+    #                 "_score": combined_score,
+    #                 "_source": {
+    #                     "question": question["_source"]["question"],
+    #                     "code": code_hit["_source"]["code_snippet"]
+    #                 }
+    #             }
+    #             print(combined_hit)
+    #             combined_results.append(combined_hit)
 
-    combined_results.sort(key=lambda x: x["_score"], reverse=True)   
-    top_results = combined_results[:10]
+    # combined_results.sort(key=lambda x: x["_score"], reverse=True)   
+    # top_results = combined_results[:10]
+    
+    #Question based search:
     
     # for id, hit in enumerate(res["hits"]["hits"]):
     #     search_result = es_client.search(index="code_snippets", q=f"question_id:{hit['_source']['question_id']}")
     #     hit["_source"].pop("question_emb", None)
     #     for code_hit in search_result["hits"]["hits"]:
-    #         if hits < 10:
-    #             for codebert_hit in code_results:
-    #                 if cosine_similarity([code_hit['_source']['code_emb']], [codebert_hit['_source']['code_emb']])[0][0] > 0.80:
-    #                     code = '```' + code_hit['_source']['code_snippet'] + '```'
-    #                     results[id]['_source']['code'] = code
-    #                     hits += 1
+    #         code = '```' + code_hit['_source']['code_snippet'] + '```'
+    #         hit['_source']['code'] = code
+                        
+    #Code Snippet based search:      
+    
+    for id, hit in enumerate(code_res["hits"]["hits"]):
+        search_result = es_client.search(index="questions", q=f"question_id:{hit['_source']['question_id']}")
+        hit["_source"].pop("code_emb", None)
+        for question_hit in search_result["hits"]["hits"]:
+            code = '```' + hit['_source']['code_snippet'] + '```'
+            question = question_hit['_source']['question']
+            hit['_source']['code'] = code
+            hit['_source']['question'] = question
+           
                         
     response = {
-        "results": top_results,
+        "results": code_results,
         "intent": metadata["intent"],
         "entities": metadata["entities"]
     }

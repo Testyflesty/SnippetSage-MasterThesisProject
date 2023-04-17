@@ -8,9 +8,35 @@ import torch.nn.functional as F
 from flask import Flask, render_template, request, jsonify
 from elasticsearch import Elasticsearch
 from transformers import AutoTokenizer, AutoModel
+import json
 import torch
+from datetime import datetime
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
+
+@app.route('/save-messages', methods=['POST'])
+@app.route('/save_messages', methods=['POST'])
+def save_messages():
+    try:
+        # Load existing data from file
+        with open('messages.json', 'r') as f:
+            existing_data = json.load(f)
+    except FileNotFoundError:
+        # If file doesn't exist, start with empty data
+        existing_data = {}
+
+    # Add new data to existing data with current timestamp as key
+    timestamp = datetime.utcnow().isoformat()
+    new_data = {timestamp: request.get_json()['messages']}
+    existing_data.update(new_data)
+
+    # Write updated data back to file
+    with open('messages.json', 'w') as f:
+        json.dump(existing_data, f)
+
+    return 'Messages saved successfully'
 
 es_client = Elasticsearch("https://localhost:9200", http_auth=("elastic", "jCJ2SMeF5mDqXMPlvs92"),  verify_certs=False)
 index_name = "questions"

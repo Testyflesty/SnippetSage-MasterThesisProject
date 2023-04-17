@@ -212,7 +212,6 @@ sentencepiece==0.1.97
 sentry-sdk==1.11.1
 seqeval==1.2.2
 six
-sklearn==0.0.post1
 sklearn-crfsuite==0.3.6
 slack-sdk==3.19.5
 smart-open==6.3.0

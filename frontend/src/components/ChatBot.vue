@@ -3,7 +3,7 @@
     <div class="flex-1 flex flex-col bg-gray-900 text-white">
       <div class="flex-1 overflow-y-auto p-6">
         <div
-          v-for="message in messages"
+          v-for="message in filteredmessages"
           :key="message.id"
           class="flex flex-col mb-4"
         >
@@ -27,13 +27,43 @@
               <button
                 v-if="!message.like && !message.dislike"
                 class="px-3 py-1 text-red-600 rounded"
-                @click="dislikeMessage(message)"
+                @click="dislikeMessage(message);"
               >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 15h2.25m8.024-9.75c.011.05.028.1.052.148.591 1.2.924 2.55.924 3.977a8.96 8.96 0 01-.999 4.125m.023-8.25c-.076-.365.183-.75.575-.75h.908c.889 0 1.713.518 1.972 1.368.339 1.11.521 2.287.521 3.507 0 1.553-.295 3.036-.831 4.398C20.613 14.547 19.833 15 19 15h-1.053c-.472 0-.745-.556-.5-.96a8.95 8.95 0 00.303-.54m.023-8.25H16.48a4.5 4.5 0 01-1.423-.23l-3.114-1.04a4.5 4.5 0 00-1.423-.23H6.504c-.618 0-1.217.247-1.605.729A11.95 11.95 0 002.25 12c0 .434.023.863.068 1.285C2.427 14.306 3.346 15 4.372 15h3.126c.618 0 .991.724.725 1.282A7.471 7.471 0 007.5 19.5a2.25 2.25 0 002.25 2.25.75.75 0 00.75-.75v-.633c0-.573.11-1.14.322-1.672.304-.76.93-1.33 1.653-1.715a9.04 9.04 0 002.86-2.4c.498-.634 1.226-1.08 2.032-1.08h.384" />
 </svg>
               </button>
-
+              <TransitionRoot as="template" :show="open">
+      <Dialog as="div" class="relative z-10" @close="open = false">
+        <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
+          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+        </TransitionChild>
+  
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+          <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200" leave-from="opacity-100 translate-y-0 sm:scale-100" leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+              <DialogPanel class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                <div class="sm:flex sm:items-start">
+                  <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                    <ExclamationTriangleIcon class="h-6 w-6 text-red-600" aria-hidden="true" />
+                  </div>
+                  <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                    <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">Remove the code snippet?</DialogTitle>
+                    <div class="mt-2">
+                      <p class="text-sm text-gray-500">I'm sorry you did not like the result I gave you. Your search results will be personilized and the algorithm will be trained to provide you with better results.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                  <button type="button" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto" @click="this.removeCodeSnippet(this.modalMessage);open = false;">Remove!</button>
+                  <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto" @click="open = false" ref="cancelButtonRef">Cancel</button>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
             </div>
             </div>
               <div v-else>
@@ -90,21 +120,12 @@
         <p v-else v-html="message.highlightedText"></p>
       </div>
     </div>
+    <button @click="saveMessagesToJson()" class="bg-green-500 w-auto text-white p-2 rounded-lg hover:bg-green-600 transition-colors duration-300">Save Searches</button>
   </div>
 </div>
 
-<div class="modal" :class="{ 'is-active': modalIsActive }">
-      <div class="modal-background" @click="modalIsActive = false"></div>
-      <div class="modal-content">
-        <div class="box">
-          <p class="subtitle">{{ modalMessage }}</p>
-        </div>
-      </div>
-      <button class="modal-close is-large" aria-label="close" @click="modalIsActive = false"></button>
-    </div>
 
-</div>
-
+  </div>
 
 </template>
 
@@ -117,11 +138,20 @@ import 'prismjs/components/prism-python';
 import "prismjs/plugins/line-numbers/prism-line-numbers.css";
 import "prismjs/plugins/line-numbers/prism-line-numbers.min.js";
 import Highlighter from 'vue-highlight-words'
+import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
+import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
+
 
 export default {
   name: "Chat",
   components: {
-    Highlighter
+    Highlighter,
+    Dialog,
+    DialogPanel,
+    DialogTitle,
+    TransitionChild,
+    TransitionRoot,
+    ExclamationTriangleIcon
   },
   data() {
     return {
@@ -131,7 +161,8 @@ export default {
       recentSearches: [],
       jsonResponse1: {},
       jsonResponse2: {},
-      
+      open: false,
+      modalMessage: {},
       textValues: [],
       singleTextValue: "",
       modalIsActive: false,
@@ -153,6 +184,9 @@ export default {
     },
     usermessages() {
       return this.messages.filter(message => !message.isBot);
+    },
+    filteredmessages() {
+      return this.messages.filter(message => !message.isRemoved);
     },
 
   },
@@ -181,6 +215,7 @@ export default {
     return true;
 },
 
+
 likeMessage(message) {
       message.liked = true;
       message.disliked = false;
@@ -190,7 +225,35 @@ likeMessage(message) {
       message.liked = false;
       message.disliked = true;
       // this.messages = this.messages.filter((m) => m !== message);
+      setTimeout(() => {
+        this.open = true;
+        this.modalMessage = message;
+      }, 1000);
     },
+    removeCodeSnippet(message) {
+      this.messages[message.id].isRemoved = true;
+      this.messages[message.id+1].isRemoved = true;
+
+    },
+
+    async saveMessagesToJson() {
+      const timestamp = new Date().toISOString();
+      const messages = this.messages;
+      const data = {
+        timestamp,
+        messages
+      };
+
+      try {
+        const response = await axios.post('http://localhost:8080/save-messages', data);
+        console.log('Messages saved to JSON file!');
+      } catch (error) {
+        console.error(error);
+      }
+    
+
+},
+
 
 highlightEntities(text) {
       const regex = new RegExp(Object.keys(this.namedentities).join('|'), 'gi');
@@ -247,8 +310,8 @@ highlightEntities(text) {
       const codeSnippet = results[i]._source.code
       const score = this.formatter.format(results[i]._score)
 
-      this.messages.push({ id: this.messages.length -1, text: "Question: " + question + " with a score of " + score, isBot: true , highlightedText:""});
-      this.messages.push({ id: this.messages.length -1, text: codeSnippet, isBot: true ,highlightedText:""});
+      this.messages.push({ id: this.messages.length -1, text: "Question: " + question + " with a score of " + score, isBot: true , highlightedText:"", score: score});
+      this.messages.push({ id: this.messages.length -1, text: codeSnippet, isBot: true ,highlightedText:"", score: score});
 
     }
 
