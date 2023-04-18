@@ -32,6 +32,10 @@ tracker_store:
     db: rasa
     username: Testyflesty
     password: zFAKhF22HC4zsWik
+    
+
+
+    
 #tracker_store:
 #    type: mongod
 #    url: <url to your mongo instance, e.g. mongodb://localhost:27017>

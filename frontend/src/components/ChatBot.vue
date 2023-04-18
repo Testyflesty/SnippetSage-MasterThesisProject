@@ -50,8 +50,14 @@
                   <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                     <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">Remove the code snippet?</DialogTitle>
                     <div class="mt-2">
-                      <p class="text-sm text-gray-500">I'm sorry you did not like the result I gave you. Your search results will be personilized and the algorithm will be trained to provide you with better results.</p>
+                      <p class="text-sm text-gray-500">I'm sorry you did not like the result I gave you. Your search results will be personilized and the algorithm will be trained to provide you with better results. Please fill in the box below to provide feedback on why it was not relevant:</p>
                     </div>
+                    <div>
+    <label for="comment" class="block text-sm font-medium leading-6 text-gray-900">Please add your feedback</label>
+    <div class="mt-2">
+      <textarea rows="4" name="comment" v-model="userfeedback" id="comment" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+    </div>
+  </div>
                   </div>
                 </div>
                 <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
@@ -168,6 +174,7 @@ export default {
       modalIsActive: false,
       modalMessage: '',
       namedentities: {},
+      userfeedback: "",
       formatter: new Intl.NumberFormat('en-US', {
       style: 'percent',
       minimumFractionDigits: 2,
@@ -231,6 +238,7 @@ likeMessage(message) {
       }, 1000);
     },
     removeCodeSnippet(message) {
+      this.messages[message.id+1].feedback = this.userfeedback;
       this.messages[message.id].isRemoved = true;
       this.messages[message.id+1].isRemoved = true;
 

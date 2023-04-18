@@ -25,4 +25,4 @@ WORKDIR /
 
 EXPOSE 5005 5173 5055 8080
 
-CMD ["bash", "-c",  "cd /app/backend & rasa run -m models --enable-api --cors '*' --port 5005 & rasa run actions --cors '*' & python baseline/app.py & cd /app/frontend && npm run dev"]
+CMD ["bash", "-c",  "cd /backend & rasa run -m models --enable-api --cors '*' --port 5005 & rasa run actions --cors '*' & python baseline/app.py & cd /frontend && npm run dev"]

@@ -168,7 +168,7 @@ PyJWT==2.6.0
 pykwalify==1.8.0
 pymongo==3.10.1
 Pympler==1.0.1
-pyOpenSSL
+pyOpenSSL==22.0.0
 pyparsing==3.0.9
 pyrsistent==0.19.3
 PySocks

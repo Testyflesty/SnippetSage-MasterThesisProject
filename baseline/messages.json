@@ -1,1 +1,351 @@
-{"2023-04-17T21:58:12.550995": [{"id": 0, "text": "Hello there, my name is Snippetsage, I can help you find code snippets. What are you looking for?", "isBot": true, "highlightedText": "", "intent": "", "liked": false, "disliked": false}, {"id": 0, "text": "What is an array?", "isBot": false, "highlightedText": "What is an <span class=\"entity-operation\">array<span class=\"label\">[operation]</span></span>?", "intent": "code_search"}, {"id": 1, "text": "Question: indexing in numpy nd-array with a score of 93.50%", "isBot": true, "highlightedText": "", "score": "93.50%", "isRemoved": true}, {"id": 2, "text": "```array[..., i] = something\n```", "isBot": true, "highlightedText": "", "score": "93.50%", "liked": false, "disliked": true, "isRemoved": true}, {"id": 3, "text": "Question: Python: how can I check if the key of an dictionary exists? with a score of 93.25%", "isBot": true, "highlightedText": "", "score": "93.25%"}, {"id": 4, "text": "```if key in array:\n  # do something\n```", "isBot": true, "highlightedText": "", "score": "93.25%", "liked": true, "disliked": false}, {"id": 5, "text": "Question: python - is it possible to extend the set of things that xml-rpc can serialize? with a score of 92.03%", "isBot": true, "highlightedText": "", "score": "92.03%"}, {"id": 6, "text": "```<array>.shape\n<array>.dtype\n<array>.flat\n```", "isBot": true, "highlightedText": "", "score": "92.03%", "liked": true, "disliked": false}, {"id": 7, "text": "Question: How to change all True values in list on False and vice versa with a score of 91.96%", "isBot": true, "highlightedText": "", "score": "91.96%"}, {"id": 8, "text": "```array = [not elem for elem in array]\n```", "isBot": true, "highlightedText": "", "score": "91.96%"}, {"id": 9, "text": "Question: Print space after each word with a score of 91.91%", "isBot": true, "highlightedText": "", "score": "91.91%"}, {"id": 10, "text": "```values = [\"this\", \"is\", \"your\", \"array\"]\nresult = \" \".join(values)\n```", "isBot": true, "highlightedText": "", "score": "91.91%"}, {"id": 11, "text": "Question: increasing expressiveness in array elements test with a score of 91.82%", "isBot": true, "highlightedText": "", "score": "91.82%"}, {"id": 12, "text": "```all(is_okay(s) for s in some_array)\n```", "isBot": true, "highlightedText": "", "score": "91.82%"}, {"id": 13, "text": "Question: computing the occurences of a number in a list with recursion with a score of 91.77%", "isBot": true, "highlightedText": "", "score": "91.77%"}, {"id": 14, "text": "```def array11(arr, index):\n    if index == len(arr):\n        return 0\n    return (arr[index] == 11) + array11(arr, index + 1)\n```", "isBot": true, "highlightedText": "", "score": "91.77%"}, {"id": 15, "text": "Question: Most efficient way to reverse a numpy array with a score of 91.57%", "isBot": true, "highlightedText": "", "score": "91.57%"}, {"id": 16, "text": "```arr = np.array(some_sequence)\nreversed_arr = arr[::-1]\n\ndo_something(arr)\nlook_at(reversed_arr)\ndo_something_else(arr)\nlook_at(reversed_arr)\n```", "isBot": true, "highlightedText": "", "score": "91.57%"}, {"id": 17, "text": "Question: Counting array elements in Python with a score of 91.52%", "isBot": true, "highlightedText": "", "score": "91.52%"}, {"id": 18, "text": "```len(myArray)\n```", "isBot": true, "highlightedText": "", "score": "91.52%"}, {"id": 19, "text": "Question: Python char array declaration with a score of 91.52%", "isBot": true, "highlightedText": "", "score": "91.52%"}, {"id": 20, "text": "```myArray = \"\\0\" * 100\n```", "isBot": true, "highlightedText": "", "score": "91.52%"}, {"id": 21, "text": "I classified your question with the following intent: code_search And found these entities: array: operation", "isBot": true}]}
+{
+    "2023-04-17T21:58:12.550995": [
+        {
+            "id": 0,
+            "text": "Hello there, my name is Snippetsage, I can help you find code snippets. What are you looking for?",
+            "isBot": true,
+            "highlightedText": "",
+            "intent": "",
+            "liked": false,
+            "disliked": false
+        },
+        {
+            "id": 0,
+            "text": "What is an array?",
+            "isBot": false,
+            "highlightedText": "What is an <span class=\"entity-operation\">array<span class=\"label\">[operation]</span></span>?",
+            "intent": "code_search"
+        },
+        {
+            "id": 1,
+            "text": "Question: indexing in numpy nd-array with a score of 93.50%",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "93.50%",
+            "isRemoved": true
+        },
+        {
+            "id": 2,
+            "text": "```array[..., i] = something\n```",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "93.50%",
+            "liked": false,
+            "disliked": true,
+            "isRemoved": true
+        },
+        {
+            "id": 3,
+            "text": "Question: Python: how can I check if the key of an dictionary exists? with a score of 93.25%",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "93.25%"
+        },
+        {
+            "id": 4,
+            "text": "```if key in array:\n  # do something\n```",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "93.25%",
+            "liked": true,
+            "disliked": false
+        },
+        {
+            "id": 5,
+            "text": "Question: python - is it possible to extend the set of things that xml-rpc can serialize? with a score of 92.03%",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "92.03%"
+        },
+        {
+            "id": 6,
+            "text": "```<array>.shape\n<array>.dtype\n<array>.flat\n```",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "92.03%",
+            "liked": true,
+            "disliked": false
+        },
+        {
+            "id": 7,
+            "text": "Question: How to change all True values in list on False and vice versa with a score of 91.96%",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.96%"
+        },
+        {
+            "id": 8,
+            "text": "```array = [not elem for elem in array]\n```",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.96%"
+        },
+        {
+            "id": 9,
+            "text": "Question: Print space after each word with a score of 91.91%",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.91%"
+        },
+        {
+            "id": 10,
+            "text": "```values = [\"this\", \"is\", \"your\", \"array\"]\nresult = \" \".join(values)\n```",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.91%"
+        },
+        {
+            "id": 11,
+            "text": "Question: increasing expressiveness in array elements test with a score of 91.82%",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.82%"
+        },
+        {
+            "id": 12,
+            "text": "```all(is_okay(s) for s in some_array)\n```",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.82%"
+        },
+        {
+            "id": 13,
+            "text": "Question: computing the occurences of a number in a list with recursion with a score of 91.77%",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.77%"
+        },
+        {
+            "id": 14,
+            "text": "```def array11(arr, index):\n    if index == len(arr):\n        return 0\n    return (arr[index] == 11) + array11(arr, index + 1)\n```",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.77%"
+        },
+        {
+            "id": 15,
+            "text": "Question: Most efficient way to reverse a numpy array with a score of 91.57%",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.57%"
+        },
+        {
+            "id": 16,
+            "text": "```arr = np.array(some_sequence)\nreversed_arr = arr[::-1]\n\ndo_something(arr)\nlook_at(reversed_arr)\ndo_something_else(arr)\nlook_at(reversed_arr)\n```",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.57%"
+        },
+        {
+            "id": 17,
+            "text": "Question: Counting array elements in Python with a score of 91.52%",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.52%"
+        },
+        {
+            "id": 18,
+            "text": "```len(myArray)\n```",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.52%"
+        },
+        {
+            "id": 19,
+            "text": "Question: Python char array declaration with a score of 91.52%",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.52%"
+        },
+        {
+            "id": 20,
+            "text": "```myArray = \"\\0\" * 100\n```",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.52%"
+        },
+        {
+            "id": 21,
+            "text": "I classified your question with the following intent: code_search And found these entities: array: operation",
+            "isBot": true
+        }
+    ],
+    "2023-04-18T15:57:17.148447": [
+        {
+            "id": 0,
+            "text": "Hello there, my name is Snippetsage, I can help you find code snippets. What are you looking for?",
+            "isBot": true,
+            "highlightedText": "",
+            "intent": "",
+            "liked": false,
+            "disliked": false
+        },
+        {
+            "id": 0,
+            "text": "What is an array?",
+            "isBot": false,
+            "highlightedText": ""
+        },
+        {
+            "id": 1,
+            "text": "What is an array?",
+            "isBot": false,
+            "highlightedText": "What is an <span class=\"entity-operation\">array<span class=\"label\">[operation]</span></span>?",
+            "intent": "code_search"
+        },
+        {
+            "id": 2,
+            "text": "Question: indexing in numpy nd-array with a score of 93.50%",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "93.50%"
+        },
+        {
+            "id": 3,
+            "text": "```array[..., i] = something\n```",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "93.50%",
+            "liked": true,
+            "disliked": false
+        },
+        {
+            "id": 4,
+            "text": "Question: Python: how can I check if the key of an dictionary exists? with a score of 93.25%",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "93.25%"
+        },
+        {
+            "id": 5,
+            "text": "```if key in array:\n  # do something\n```",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "93.25%",
+            "liked": true,
+            "disliked": false
+        },
+        {
+            "id": 6,
+            "text": "Question: python - is it possible to extend the set of things that xml-rpc can serialize? with a score of 92.03%",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "92.03%",
+            "isRemoved": true
+        },
+        {
+            "id": 7,
+            "text": "```<array>.shape\n<array>.dtype\n<array>.flat\n```",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "92.03%",
+            "liked": false,
+            "disliked": true,
+            "feedback": "This code snippet was not relevant as the question did not mention an array.",
+            "isRemoved": true
+        },
+        {
+            "id": 8,
+            "text": "Question: How to change all True values in list on False and vice versa with a score of 91.96%",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.96%"
+        },
+        {
+            "id": 9,
+            "text": "```array = [not elem for elem in array]\n```",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.96%"
+        },
+        {
+            "id": 10,
+            "text": "Question: Print space after each word with a score of 91.91%",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.91%"
+        },
+        {
+            "id": 11,
+            "text": "```values = [\"this\", \"is\", \"your\", \"array\"]\nresult = \" \".join(values)\n```",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.91%"
+        },
+        {
+            "id": 12,
+            "text": "Question: increasing expressiveness in array elements test with a score of 91.82%",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.82%"
+        },
+        {
+            "id": 13,
+            "text": "```all(is_okay(s) for s in some_array)\n```",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.82%"
+        },
+        {
+            "id": 14,
+            "text": "Question: computing the occurences of a number in a list with recursion with a score of 91.77%",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.77%"
+        },
+        {
+            "id": 15,
+            "text": "```def array11(arr, index):\n    if index == len(arr):\n        return 0\n    return (arr[index] == 11) + array11(arr, index + 1)\n```",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.77%"
+        },
+        {
+            "id": 16,
+            "text": "Question: Most efficient way to reverse a numpy array with a score of 91.57%",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.57%"
+        },
+        {
+            "id": 17,
+            "text": "```arr = np.array(some_sequence)\nreversed_arr = arr[::-1]\n\ndo_something(arr)\nlook_at(reversed_arr)\ndo_something_else(arr)\nlook_at(reversed_arr)\n```",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.57%"
+        },
+        {
+            "id": 18,
+            "text": "Question: Counting array elements in Python with a score of 91.52%",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.52%"
+        },
+        {
+            "id": 19,
+            "text": "```len(myArray)\n```",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.52%"
+        },
+        {
+            "id": 20,
+            "text": "Question: Python char array declaration with a score of 91.52%",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.52%"
+        },
+        {
+            "id": 21,
+            "text": "```myArray = \"\\0\" * 100\n```",
+            "isBot": true,
+            "highlightedText": "",
+            "score": "91.52%"
+        },
+        {
+            "id": 22,
+            "text": "I classified your question with the following intent: code_search And found these entities: array: operation",
+            "isBot": true
+        }
+    ]
+}
