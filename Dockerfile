@@ -1,6 +1,6 @@
 FROM node:14 AS frontend
 
-WORKDIR /app/frontend
+WORKDIR /frontend
 
 COPY frontend/package*.json ./
 RUN npm install
@@ -10,7 +10,7 @@ RUN npm run build
 
 FROM python:3.7 AS backend
 
-WORKDIR /app/backend
+WORKDIR /backend
 
 COPY backend/requirements.txt ./
 RUN pip install -r requirements.txt
@@ -20,10 +20,8 @@ WORKDIR /app/baseline
 
 COPY baseline/ .
 
-WORKDIR /app
+WORKDIR /
 
-COPY --from=frontend /app/frontend/dist /app/backend/static
-COPY --from=frontend /app/frontend/dist /app/baseline/static
 
 EXPOSE 5005 5173 5055 8080
 
