@@ -14,7 +14,7 @@
                 <pre>
                 <code v-html="highlightCode(message.text)"></code>
               </pre>
-              <div class="flex justify-between items-center mt-2">
+              <div class="flex justify-start items-center mt-2">
               <button
                 v-if="!message.like && !message.dislike"
                 class="px-3 py-1 text-green-600  rounded mr-2"
