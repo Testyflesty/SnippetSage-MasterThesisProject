@@ -43,6 +43,7 @@ nlu:
 
 - intent: code_example
   examples: |
+      - How to use [bubblesort](package) to [extract](operation) the [right data from a dataset](query)
       - Can you provide me with a code snippet that shows how to [X](query)?
       - Can you give me an example of [CSS](proglanguage) code that [centers](operation) text?
       - Can you give me an example of an [XML](proglanguage) file that [shows](operation) data?

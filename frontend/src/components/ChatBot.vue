@@ -317,8 +317,8 @@ highlightEntities(text) {
       const question = results[i]._source.question
       const codeSnippet = results[i]._source.code
       const score = this.formatter.format(results[i]._score)
-
-      this.messages.push({ id: this.messages.length -1, text: "Question: " + question + " with a score of " + score, isBot: true , highlightedText:"", score: score});
+      let questionid = i + 1
+      this.messages.push({ id: this.messages.length -1, text: questionid + ". Question: " + question + " with a score of " + score, isBot: true , highlightedText:"", score: score});
       this.messages.push({ id: this.messages.length -1, text: codeSnippet, isBot: true ,highlightedText:"", score: score});
 
     }

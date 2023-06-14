@@ -62,7 +62,8 @@
           .then(data => {
             const results = document.querySelector('#results');
             results.innerHTML = '';
-            data.forEach(result => {
+            const ol = document.createElement('ol');
+            data.forEach((result, index) => {
               const li = document.createElement('li');
               const a = document.createElement('a');
               const pre = document.createElement('pre');
@@ -74,12 +75,15 @@
               a.textContent = result._source.question + ' - ' + result._score;
               li.appendChild(a);
               li.appendChild(pre);
-              results.appendChild(li);
+              ol.appendChild(li);
+              ol.setAttribute('start', 1); // starts the list at 1
             });
+            results.appendChild(ol);
             hljs.highlightAll();
           })
           .catch(error => console.error(error));
       }
     </script>
+    
   </body>
 </html>

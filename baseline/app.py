@@ -51,19 +51,22 @@ def index():
 def search():
     if request.method == 'POST':
         query = request.form['query']
-        encoder = Encoder("bert-base-uncased")
-        query_vector = encoder.encode(query, max_length=64)
-        query_dict = {
-            "knn":{
-            "field": "question_emb",
-            "query_vector": query_vector[0].tolist(),
-            "k": 10,
-            "num_candidates": 1000
-            },
-            "fields":["question_id","question",
-                            "question_emb"]
+        code_encoder = Encoder('hamzab/codebert_code_search')
+
+        code_vector = code_encoder.encode(query, max_length=768)
+        code_query_dict = {
+            "size": 10,
+        
+            "knn": {
+            "field": "code_emb",
+            "query_vector": code_vector[0].tolist(),
+            "k": 100,
+            "num_candidates": 1000,
+            }
+            
         }
-        response = es_client.search(index='questions', body=query_dict)
+    
+        response = es_client.search(index='code_snippets', body=code_query_dict)
         results = response["hits"]["hits"]
         for id, hit in enumerate(response["hits"]["hits"][:10]):
 

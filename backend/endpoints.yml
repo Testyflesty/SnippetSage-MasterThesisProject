@@ -12,7 +12,8 @@
 
 action_endpoint:
  url: "http://localhost:5055/webhook"
-
+ cors_allowed_origins:
+    - "http://84.31.235.199:5173"
 # Tracker store which is used to store the conversations.
 # By default the conversations are stored in memory.
 # https://rasa.com/docs/rasa/tracker-stores
