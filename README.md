@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org/badge/594777044.svg)](https://zenodo.org/badge/latestdoi/594777044)
 # SnippetSage - A Neural Code Search Engine with Intent Modelling Chat Bot
 
 > "Intent modeling enables us to bridge the gap between what users search for and what they really want." - Anne Aula, Director of User Research at Google
